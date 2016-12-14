@@ -11,7 +11,7 @@
  * 1 : 3 high, 1 low
  *
  * we send the code 10 times due to low quality / high noise
- * often seen with low coast 433Mhz RF receiver
+ * often seen with low cost 433Mhz RF receiver
  */
 
 void send_code(int code, int length)
