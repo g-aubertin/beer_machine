@@ -1,7 +1,6 @@
 [Unit]
 Description=Beer Machine daemon
 
-
 [Service]
 Type=oneshot
 RemainAfterExit=no
