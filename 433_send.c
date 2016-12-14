@@ -58,7 +58,6 @@ void send_code(int code, int length)
 
 void main(int argc, char *argv[])
 {
-	int *table;
 	int i, code, length;
 
 	if (argc != 3) {
