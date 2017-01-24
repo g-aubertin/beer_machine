@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <title>beer fermenter</title>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+
+
+    <!-- google chart for plotting data
+       add the following line to generate and display :
+       <div id="chart_div" align='center' style="width: 800px; height: 400px;"></div>
+    -->
+
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+      var data = google.visualization.arrayToDataTable([
+      ['Time', 'Temperature'],

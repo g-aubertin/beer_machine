@@ -1,0 +1,7 @@
+<% include template %>
+
+<% array.forEach(function(row){ %>
+['<%=row.date%>', <%=row.temperature%>],
+<% }) %>
+
+<% include template_end %>
