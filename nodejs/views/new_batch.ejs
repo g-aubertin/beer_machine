@@ -1,0 +1,36 @@
+<% include header %>
+
+<body>
+  <div id="wrapper">
+
+    <main>
+      <div id="content">
+	<div class="innertube">
+
+	  <h1>new batch</h1>
+
+	  <form action="/new_batch" method="post">
+	    <div>
+	      <label for="batch_name"><p><b>Name:</p></b></label>
+	      <input type="text" id="batch_name" name="" />
+	    </div>
+	    <div>
+	      <label for="temperature"><p><b>Temperature:</p></b></label>
+	      <input type="text" id="mail" name="" />
+	    </div>
+	    <div>
+	      <label for="recipe"><p><b>Recipe:</p></b></label>
+	       <textarea id="recipe" name=""></textarea>
+	    </div>
+	  </form>
+
+	</div>
+      </div>
+    </main>
+
+<% include left_panel %>
+
+  </div>
+</body>
+
+<% include footer %>
