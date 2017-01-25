@@ -1,6 +1,7 @@
 <% include template %>
 
-<% array.forEach(function(row){ %>
+  <!-- add database information in GChart format -->
+<% point_list.forEach(function(row){ %>
 ['<%=row.date%>', <%=row.temperature%>],
 <% }) %>
 

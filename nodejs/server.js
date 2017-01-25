@@ -18,11 +18,14 @@ app.use(express.static('public'));
 //routing default response
 app.get('/', function(request, response) {
 
-//db.serialize(function() {
+  db.serialize(function() {
     db.all("SELECT * FROM fermentation_temp", function (err, rows) {
-    response.render('index', {array:rows})
+      current_batch_temp = rows;
     });
-//});
+    db.all("SELECT name FROM sqlite_master WHERE type='table'", function (err, rows) {
+      response.render('index', {point_list:current_batch_temp, table_list:rows})
+    });
+  });
 });
 
 app.listen(8080);

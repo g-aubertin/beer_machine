@@ -17,6 +17,14 @@
 	<div id="content">
 	  <div class="innertube">
 	    <h1>fermentation temperature chart</h1>
+
+<!-- select with table list -->
+      <select name="tables">
+        <% table_list.forEach(function(row){ %>
+        <option value="<%=row.name%>"selected><%=row.name%></option>
+        <% }) %>
+      </select>
+
 	    <p><b>recette :</b> triple IPA Lascaris </p>
 	    <p><b>fermentation procedure :</b> 3 weeks - 19 degrés </p>
 	    <p><b>fermentation start :</b> 3 octobre 2016 </p>
@@ -47,6 +55,7 @@
 	    <li><a href="#">Link 3</a></li>
 	    <li><a href="#">Link 4</a></li>
 	    <li><a href="#">Link 5</a></li>
+
 	  </ul>
 	  <h3>Left heading</h3>
 	  <ul>
