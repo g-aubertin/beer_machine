@@ -12,16 +12,24 @@
 	  <form action="/new_batch" method="post">
 	    <div>
 	      <label for="batch_name"><p><b>Name:</p></b></label>
-	      <input type="text" id="batch_name" name="" />
+	      <input type="text" id="batch_name" name="batch_name" />
 	    </div>
 	    <div>
 	      <label for="temperature"><p><b>Temperature:</p></b></label>
-	      <input type="text" id="mail" name="" />
+	      <input type="text" id="temperature" name="temperature" />
 	    </div>
+      <div>
+        <label for="duration"><p><b>Duration:</p></b></label>
+        <input type="text" id="duration" name="duration" />
+      </div>
 	    <div>
 	      <label for="recipe"><p><b>Recipe:</p></b></label>
 	       <textarea id="recipe" name=""></textarea>
 	    </div>
+      <!-- button to validate -->
+      <div>
+        <button type="submit">create new batch !</button>
+      </div>
 	  </form>
 
 	</div>

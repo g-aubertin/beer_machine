@@ -55,11 +55,14 @@
 	  </form>
 
 	  <!-- select with table list -->
-	  <select name="tables">
-            <% table_list.forEach(function(row){ %>
-            <option value="<%=row.name%>"selected><%=row.name%></option>
-            <% }) %>
-	  </select>
+    <form action="/" method="post">
+	     <select name="tables">
+          <% table_list.forEach(function(row){ %>
+          <option value="<%=row.name%>"selected><%=row.name%></option>
+          <% }) %>
+	    </select>
+      <button type="submit"> Change to selected batch </button>
+    </form>
 
 	  <p><b>recette :</b> triple IPA Lascaris </p>
 	  <p><b>fermentation procedure :</b> 3 weeks - 19 degrés </p>
