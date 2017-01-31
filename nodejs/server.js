@@ -39,23 +39,29 @@ app.get('/', function(request, response) {
   });
 });
 
-//routing for buttons
+// routing for buttons
 app.post('/', function(req, res) {
+
+    // debug
     console.log('POST request to the homepage');
     console.log(req.body);
-    // table change
+
+    // batch switch
     if (req.body && req.body.tables) {
       db.serialize(function() {
-        if (req.body && req.body.tables) {
-          db.all("SELECT * FROM " +req.body.tables, function (err, rows) {
-            batch_switch = rows;
+        db.all("SELECT * FROM " +req.body.tables, function (err, rows) {
+          batch_switch = rows;
           });
-        }
+        db.all("SELECT name FROM sqlite_master WHERE type='table'", function (err, rows) {
+          res.render('index', {point_list:batch_switch, table_list:rows})
+          });
       });
     }
-    db.all("SELECT name FROM sqlite_master WHERE type='table'", function (err, rows) {
-      res.render('index', {point_list:batch_switch, table_list:rows})
-    });
+
+    // new batch button
+    if (req.body && (req.body.new_batch === '')) {
+      res.redirect('/new_batch');
+    }
 });
 
 // routing for new batch page

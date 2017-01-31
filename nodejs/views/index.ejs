@@ -17,7 +17,6 @@
   <% point_list.forEach(function(row){ %>
   ['<%=row.date%>', <%=row.temperature%>],
   <% }) %>
-
   ]);
 
   var options = {
@@ -41,7 +40,7 @@
 
 	  <!-- button to create new batch -->
 	  <form action="/" method="post">
-	    <button type="submit">new batch !</button>
+	    <button name="new_batch" type="submit">new batch !</button>
 	  </form>
 
 	  <!-- button to start -->
