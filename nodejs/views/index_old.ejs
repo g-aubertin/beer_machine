@@ -1,0 +1,80 @@
+<% include header %>
+
+<!-- google chart for plotting data
+       add the following line to generate and display :
+       <div id="chart_div" align='center' style="width: 800px; height: 400px;"></div>
+    -->
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+  google.load("visualization", "1", {packages:["corechart"]});
+  google.setOnLoadCallback(drawChart);
+  function drawChart() {
+  var data = google.visualization.arrayToDataTable([
+  ['Time', 'Temperature'],
+
+  <!-- add database information in GChart format -->
+  <% point_list.forEach(function(row){ %>
+  ['<%=row.date%>', <%=row.temperature%>],
+  <% }) %>
+  ]);
+
+  var options = {
+  title: 'Temperature'
+  };
+
+  var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+  chart.draw(data, options);
+  }
+</script>
+
+<!-- end of script -->
+
+<body>
+  <div id="wrapper">
+
+    <main>
+      <div id="content">
+	<div class="innertube">
+	  <h1>fermentation temperature chart</h1>
+
+	  <!-- button to create new batch -->
+	  <form action="/" method="post">
+	    <button name="new_batch" type="submit">new batch !</button>
+	  </form>
+
+	  <!-- button to start -->
+	  <form action="/" method="post">
+	    <button type="submit">start !</button>
+	  </form>
+
+	  <!-- button to stop -->
+	  <form action="/" method="post">
+	    <button type="submit">stop !</button>
+	  </form>
+
+	  <!-- select with table list -->
+    <form action="/" method="post">
+	     <select name="tables">
+          <% table_list.forEach(function(row){ %>
+          <option value="<%=row.name%>"selected><%=row.name%></option>
+          <% }) %>
+	    </select>
+      <button type="submit"> Change to selected batch </button>
+    </form>
+
+	  <p><b>recette :</b> triple IPA Lascaris </p>
+	  <p><b>fermentation procedure :</b> 3 weeks - 19 degrés </p>
+	  <p><b>fermentation start :</b> 3 octobre 2016 </p>
+	  <p><b>fermentation end :</b> 24 octobre 2016 </p>
+	  <div id="chart_div" style="width: 800px; height: 400px;"></div>
+	</div>
+      </div>
+    </main>
+
+<% include left_panel %>
+
+  </div>
+</body>
+
+<% include footer %>

@@ -1,80 +1,163 @@
 <% include header %>
 
-<!-- google chart for plotting data
-       add the following line to generate and display :
-       <div id="chart_div" align='center' style="width: 800px; height: 400px;"></div>
+<body>
+
+  <!-- navbar -->
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Beer Machine</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#">Settings</a></li>
+          <li><a href="#">Help</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- sidebar -->
+  <div class="col-sm-2 sidebar hidden-xs">
+    <ul class="nav nav-sidebar">
+      <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
+      <li><a href="#">new batch</a></li>
+      <li><a href="#">batch history</a></li>
+      <li><a href="#">System</a></li>
+    </ul>
+  </div>
+
+  <!-- main container for dashboard
+  'content' class contains extra css for padding (due to navbar-fixed-top)-->
+  <div class="container-fluid content">
+    <div class="row">
+
+      <!-- main dashboard div -->
+      <div class="col-xs-10">
+
+        <!-- top image -->
+        <!--
+        <div class="container-fluid img_class">
+        <img class="img-responsive img-rounded" src="banner_resized.jpg">
+      </div>
     -->
 
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
-<script type="text/javascript">
-  google.load("visualization", "1", {packages:["corechart"]});
-  google.setOnLoadCallback(drawChart);
-  function drawChart() {
-  var data = google.visualization.arrayToDataTable([
-  ['Time', 'Temperature'],
+    <h1 class="page-header">Dashboard</h1>
 
-  <!-- add database information in GChart format -->
-  <% point_list.forEach(function(row){ %>
-  ['<%=row.date%>', <%=row.temperature%>],
-  <% }) %>
-  ]);
-
-  var options = {
-  title: 'Temperature'
-  };
-
-  var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-  chart.draw(data, options);
-  }
-</script>
-
-<!-- end of script -->
-
-<body>
-  <div id="wrapper">
-
-    <main>
-      <div id="content">
-	<div class="innertube">
-	  <h1>fermentation temperature chart</h1>
-
-	  <!-- button to create new batch -->
-	  <form action="/" method="post">
-	    <button name="new_batch" type="submit">new batch !</button>
-	  </form>
-
-	  <!-- button to start -->
-	  <form action="/" method="post">
-	    <button type="submit">start !</button>
-	  </form>
-
-	  <!-- button to stop -->
-	  <form action="/" method="post">
-	    <button type="submit">stop !</button>
-	  </form>
-
-	  <!-- select with table list -->
-    <form action="/" method="post">
-	     <select name="tables">
-          <% table_list.forEach(function(row){ %>
-          <option value="<%=row.name%>"selected><%=row.name%></option>
-          <% }) %>
-	    </select>
-      <button type="submit"> Change to selected batch </button>
-    </form>
-
-	  <p><b>recette :</b> triple IPA Lascaris </p>
-	  <p><b>fermentation procedure :</b> 3 weeks - 19 degrés </p>
-	  <p><b>fermentation start :</b> 3 octobre 2016 </p>
-	  <p><b>fermentation end :</b> 24 octobre 2016 </p>
-	  <div id="chart_div" style="width: 800px; height: 400px;"></div>
-	</div>
+    <div class="col-sm-6 col-lg-3">
+      <div class=" panel panel-primary">
+        <div class="panel-heading text-center">recipe</div>
+        <div class="panel-body">
+          <span style ="font-size:27px;">  Citra IPA </span> <i class="fa fa-beer fa-3x pull-right" aria-hidden="true"> </i>
+        </div>
       </div>
-    </main>
+    </div>
 
-<% include left_panel %>
+    <div class="col-sm-6 col-lg-3">
+      <div class=" panel panel-primary">
+        <div class="panel-heading text-center">Current Temperature</div>
+        <div class="panel-body">
+            <span style ="font-size:27px;"> 21,75 &deg;C </span> <i class="fa fa-thermometer-full fa-3x pull-right" aria-hidden="true"></i>  </p>
+        </div>
+      </div>
+    </div>
 
+    <div class="col-sm-6 col-lg-3">
+      <div class=" panel panel-primary">
+        <div class="panel-heading text-center">remaining time</div>
+        <div class="panel-body">
+            <span style ="font-size:27px;"> 17 days </span> <i class="fa fa-hourglass-half fa-3x pull-right" aria-hidden="true"> </i> </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+      <div class=" panel panel-primary">
+        <div class="panel-heading text-center">System status</div>
+        <div class="panel-body">
+          <span style ="font-size:27px;"> Running </span> <i class="fa fa-check-circle fa-3x pull-right" aria-hidden="true" style="color:green"> </i> </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Temperature log panel -->
+    <div class="col-xs-12 hidden-xs">
+      <div class=" panel panel-primary">
+        <div class="panel-heading">temperature log</div>
+        <div class="panel-body">
+
+          <div class="col-md-9">
+            <div class="ct-chart ct-major-twelfth"></div>
+            <script>
+            var data = {
+              labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+              series: [
+                [542, 543, 520, 680, 653, 753, 326, 434, 568, ]
+              ]
+            };
+
+            var options = {
+              seriesBarDistance: 10,
+              axisX: {
+                showGrid: false
+              },
+              height: "245px"
+            };
+
+            var responsiveOptions = [
+              ['screen and (max-width: 640px)', {
+                seriesBarDistance: 5,
+                axisX: {
+                  labelInterpolationFnc: function (value) {
+                    return value[0];
+                  }
+                }
+              }]
+            ];
+            new Chartist.Line('.ct-chart', data);
+            </script>
+          </div>
+
+          <!-- TODO : populate data below from database -->
+          <!-- recipe information panel -->
+
+          <div class="col-md-3">
+            <div class=" panel panel-primary">
+              <div class="panel-body">
+                <p><b> statistics :  </b></p>
+                  <p> fermentation progress : 22% </p>
+                  <p> cooling ratio : 34% </p>
+                  <p> threshold overrun: 3 </p>
+                  <p> threshold underrun: 3 </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!--
+    <div class="col-md-3">
+      <div class=" panel panel-primary">
+        <div class="panel-body">
+          <p><b> System status :  </b></p>
+          <p> daemon : running </p>
+          <p> network : 192.168.1.65 </p>
+          <p> thermometer 1-wire name : XXXXXX </p>
+          <p> power socket code : YYYYYY </p>
+          <p> uptime : 134 h</p>
+        </div>
+      </div>
+    </div>
+  -->
   </div>
+</div>
 </body>
 
 <% include footer %>
