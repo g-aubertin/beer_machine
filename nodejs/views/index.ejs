@@ -2,17 +2,144 @@
 
 <body>
 
-  <!-- global container for the page -->
-  <div class="container">
-    <div class="row">
-    <ul class="nav nav-tabs">
-      <li><a href="#">Home</a></li>
-      <li><a href="#">New Batch</a></li>
-      <li><a href="#">Batch History</a></li>
-      <li><a href="#">Settings</a></li>
-    </ul>
+  <!-- navbar -->
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Beer Machine</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#">Settings</a></li>
+          <li><a href="#">Help</a></li>
+        </ul>
       </div>
     </div>
+  </nav>
+
+  <!-- sidebar -->
+  <div class="col-sm-2 sidebar">
+    <ul class="nav nav-sidebar">
+      <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
+      <li><a href="#">new batch</a></li>
+      <li><a href="#">batch history</a></li>
+    </ul>
+  </div>
+
+  <!-- main container for dashboard
+  'content' class contains extra css for padding (due to navbar-fixed-top)-->
+  <div class="container-fluid content">
+    <div class="row">
+
+      <!-- main dashboard div -->
+      <div class="col-sm-10">
+
+        <!-- top image -->
+        <!--
+        <div class="container-fluid img_class">
+        <img class="img-responsive img-rounded" src="banner_resized.jpg">
+      </div>
+    -->
+
+    <h1 class="page-header">Dashboard</h1>
+
+    <div class="col-md-3">
+      <div class=" panel panel-primary">
+        <div class="panel-heading text-center">recipe</div>
+        <div class="panel-body">
+          <b> Citra IPA </b> <i class="fa fa-beer fa-3x pull-right" aria-hidden="true"> </i>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class=" panel panel-primary">
+        <div class="panel-heading text-center">Temperature</div>
+        <div class="panel-body">
+          <p> <b> 21 degrees </b> <i class="fa fa-thermometer-full fa-3x pull-right" aria-hidden="true"></i>  </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class=" panel panel-primary">
+        <div class="panel-heading text-center">duration</div>
+        <div class="panel-body">
+          <p> <b>21 days </b> <i class="fa fa-hourglass-half fa-3x pull-right" aria-hidden="true"> </i> </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class=" panel panel-primary">
+        <div class="panel-heading text-center">ending date</div>
+        <div class="panel-body">
+          <p> <b> 06/04/17 </b> <i class="fa fa-calendar fa-3x pull-right" aria-hidden="true"> </i> </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Temperature log panel -->
+    <div class="col-md-12">
+      <div class=" panel panel-primary">
+        <div class="panel-heading">temperature</div>
+        <div class="panel-body">
+          <div class="col-md-9">
+
+            <div class="ct-chart ct-major-twelfth"></div>
+            <script>
+            var data = {
+              labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+              series: [
+                [542, 543, 520, 680, 653, 753, 326, 434, 568, ]
+              ]
+            };
+
+            var options = {
+              seriesBarDistance: 10,
+              axisX: {
+                showGrid: false
+              },
+              height: "245px"
+            };
+
+            var responsiveOptions = [
+              ['screen and (max-width: 640px)', {
+                seriesBarDistance: 5,
+                axisX: {
+                  labelInterpolationFnc: function (value) {
+                    return value[0];
+                  }
+                }
+              }]
+            ];
+            new Chartist.Line('.ct-chart', data);
+            </script>
+          </div>
+
+          <!-- TODO : populate data below from database -->
+          <!-- recipe information panel -->
+          <div class="col-md-3">
+            <div class=" panel panel-primary">
+              <div class="panel-body">
+                <p><b> System status :  </b></p>
+                <p> daemon : running </p>
+                <p> network : 192.168.1.65 </p>
+                <p> uptime : 134 h</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 
 <% include footer %>
