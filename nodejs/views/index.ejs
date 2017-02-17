@@ -2,15 +2,111 @@
 
 <body>
 
-  <!-- global container for the page -->
-  <div class="container">
-    <div class="row">
-    <ul class="nav nav-tabs">
-      <li><a href="#">Home</a></li>
-      <li><a href="#">New Batch</a></li>
-      <li><a href="#">Batch History</a></li>
-      <li><a href="#">Settings</a></li>
-    </ul>
+  <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Beer Machine</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">Help</a></li>
+          </ul>
+          <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" placeholder="Search...">
+          </form>
+        </div>
+      </div>
+    </nav>
+
+<!-- main container / 'content' class contains extra css for padding (due to navbar-fixed-top)-->
+    <div class="container-fluid content">
+      <div class="row">
+
+        <!-- sidebar -->
+        <div class="col-sm-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
+            <li><a href="#">Reports</a></li>
+            <li><a href="#">Analytics</a></li>
+            <li><a href="#">Export</a></li>
+          </ul>
+        </div>
+
+        <!-- main dashboard div -->
+        <div class="col-sm-10">
+
+          <div class="container-fluid background_class">
+            <img class="img-responsive img-rounded" src="banner_resized.jpg">
+          </div>
+
+          <!-- recipe information panel -->
+          <div class="col-sm-3">
+          <div class=" panel panel-primary">
+            <div class="panel-heading">Current Batch</div>
+              <div class="panel-body">
+                <p> temperature : 21 </p>
+                <p> duration : 21 </p>
+                <p> recipe : Citra IPA </p>
+              </div>
+            </div>
+          </div>
+
+           <!-- Temperature log panel -->
+           <div class="col-sm-9">
+           <div class=" panel panel-primary">
+             <div class="panel-heading">temperature</div>
+                   <canvas id="myChart"></canvas>
+                   <script>
+                   var ctx = document.getElementById('myChart').getContext('2d');
+                   var myChart = new Chart(ctx, {
+                     type: 'line',
+                     data: {
+                         labels: [
+                             <% point_list.forEach(function(row){ %>
+                             "<%=row.date%>", <% }) %>
+
+                                 ],
+                         datasets: [
+                             {
+                                 label: "Fermenter Temperature",
+                                 fill: false,
+                                 lineTension: 0.1,
+                                 backgroundColor: "rgba(75,192,192,0.4)",
+                                 borderColor: "rgba(75,192,192,1)",
+                                 borderCapStyle: 'butt',
+                                 borderDash: [],
+                                 borderDashOffset: 0.0,
+                                 borderJoinStyle: 'miter',
+                                 pointBorderColor: "rgba(75,192,192,1)",
+                                 pointBackgroundColor: "#fff",
+                                 pointBorderWidth: 1,
+                                 pointHoverRadius: 5,
+                                 pointHoverBackgroundColor: "rgba(75,192,192,1)",
+                                 pointHoverBorderColor: "rgba(220,220,220,1)",
+                                 pointHoverBorderWidth: 2,
+                                 pointRadius: 1,
+                                 pointHitRadius: 10,
+                                 data: [
+                                   <% point_list.forEach(function(row){ %>
+                                     <%=row.temperature%>, <% }) %>
+                                   ],
+                                 spanGaps: false,
+                               }]
+                             }
+                           });
+                   </script>
+               </div>
+             </div>
+        </div>
       </div>
     </div>
 </body>
