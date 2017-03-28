@@ -1,37 +1,5 @@
 <% include header %>
-
-<body>
-
-  <!-- navbar -->
-  <nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">Beer Machine</a>
-      </div>
-      <div id="navbar" class="navbar-collapse collapse">
-        <ul class="nav navbar-nav navbar-right">
-          <li><a href="#">Settings</a></li>
-          <li><a href="#">Help</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-
-  <!-- sidebar -->
-  <div class="col-sm-2 sidebar hidden-xs">
-    <ul class="nav nav-sidebar">
-      <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-      <li><a href="new_batch">new batch</a></li>
-      <li><a href="#">batch history</a></li>
-      <li><a href="#">System</a></li>
-    </ul>
-  </div>
+<% include sidebar %>
 
   <!-- main container for dashboard
   'content' class contains extra css for padding (due to navbar-fixed-top)-->

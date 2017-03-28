@@ -29,7 +29,7 @@ app.get('/', function(request, response) {
     }
     else {
       db.all("SELECT * FROM fermentation_temp", function (err, rows) {
-        current_batch_temp = rows
+        current_batch_temp = rows;
       });
     }
 
@@ -67,7 +67,10 @@ app.post('/', function(req, res) {
 // routing for new batch page
 app.get('/new_batch', function(req, res){
   console.log('redirecting to new_batch page');
-  res.render('new_batch');
+  db.all("SELECT name FROM sqlite_master WHERE type='table'", function (err, rows) {
+    res.render('new_batch', {table_list:rows});
+    });
+
 });
 
 //routing for new_batch post
