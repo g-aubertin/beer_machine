@@ -70,7 +70,14 @@ app.get('/new_batch', function(req, res){
   db.all("SELECT name FROM sqlite_master WHERE type='table'", function (err, rows) {
     res.render('new_batch', {table_list:rows});
     });
+});
 
+// routing for new batch page
+app.get('/system', function(req, res){
+  console.log('redirecting to new_batch page');
+  db.all("SELECT name FROM sqlite_master WHERE type='table'", function (err, rows) {
+    res.render('system', {table_list:rows});
+    });
 });
 
 //routing for new_batch post
