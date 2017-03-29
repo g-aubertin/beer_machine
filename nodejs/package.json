@@ -15,6 +15,7 @@
     "chart.js": "^2.5.0",
     "ejs": "^2.5.5",
     "express": "^4.14.0",
+    "highcharts": "^5.0.9",
     "nodemon": "^1.11.0",
     "sqlite3": "^3.1.8"
   }

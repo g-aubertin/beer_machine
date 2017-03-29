@@ -54,35 +54,86 @@
         <div class="panel-body">
 
           <div class="col-md-9">
+
+            <div id="container"></div>
+
+            <script>
+            Highcharts.chart('container', {
+
+              chart: {
+                type: 'spline'
+              },
+
+              title: {
+                text: ''
+              },
+
+              yAxis: {
+                title: {
+                  text: 'degrees'
+                },
+                min: 22,
+                max: 23.5,
+              },
+              legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle'
+              },
+
+              plotOptions: {
+                     spline: {
+                         lineWidth: 4,
+                         states: {
+                             hover: {
+                                 lineWidth: 5
+                             }
+                         },
+                         marker: {
+                             enabled: false
+                         },
+                     }
+                 },
+
+              series: [{
+                name: 'Installation',
+                data: [
+                  <% point_list.forEach(function(row){ %>
+                  <%=row.temperature%>,
+                  <% }) %>
+                ],
+                marker: {
+                  enabled:false
+                }
+              }]
+
+            });
+            </script>
+
+
+            <!--
             <div class="ct-chart ct-major-twelfth"></div>
             <script>
             var data = {
-              labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+              labels: [
+                ],
               series: [
-                [542, 543, 520, 680, 653, 753, 326, 434, 568, ]
+                [<% point_list.forEach(function(row){ %>
+                <%=row.temperature%>,
+                <% }) %>]
               ]
             };
 
             var options = {
-              seriesBarDistance: 10,
-              axisX: {
-                showGrid: false
-              },
-              height: "245px"
+              lineSmooth: Chartist.Interpolation.monotoneCubic({fillHoles:false}),
+              showPoint: false,
+              low: 22.4,
+              high: 23,
             };
 
-            var responsiveOptions = [
-              ['screen and (max-width: 640px)', {
-                seriesBarDistance: 5,
-                axisX: {
-                  labelInterpolationFnc: function (value) {
-                    return value[0];
-                  }
-                }
-              }]
-            ];
-            new Chartist.Line('.ct-chart', data);
+            new Chartist.Line('.ct-chart', data, options);
             </script>
+          -->
           </div>
 
           <!-- TODO : populate data below from database -->

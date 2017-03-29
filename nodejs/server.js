@@ -28,7 +28,7 @@ app.get('/', function(request, response) {
       });
     }
     else {
-      db.all("SELECT * FROM fermentation_temp", function (err, rows) {
+      db.all("SELECT * FROM Cascade_IPA", function (err, rows) {
         current_batch_temp = rows;
       });
     }
