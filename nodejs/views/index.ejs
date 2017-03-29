@@ -69,8 +69,11 @@
             var options = {
               lineSmooth: Chartist.Interpolation.monotoneCubic({fillHoles:false}),
               showPoint: false,
-              low: 22.4,
+              low: 21,
               high: 23,
+              axisX: {
+                showGrid: false
+              }
             };
 
             new Chartist.Line('.ct-chart', data, options);
