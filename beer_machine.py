@@ -1,15 +1,35 @@
 #!/usr/bin/env python
 
-import sys, os, time, signal
+import sys, os, time, signal, socket
 import sqlite3, datetime
 import webui
 
 SOCKET_CODE_ON = 0
 SOCKET_CODE_OFF = 0
 W1_PATH = ""
-DURATION = 0
-TEMP = 0
-NAME = ""
+
+def sock_init():
+
+    server_address = './beer_socket'
+
+    # Make sure the socket does not already exist
+    try:
+        os.unlink(server_address)
+    except OSError:
+        if os.path.exists(server_address):
+            raise
+
+    # Create a UDS socket
+    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+
+    # Bind the socket to the port
+    print 'UDS socket binding up on %s' % server_address
+    sock.bind(server_address)
+
+    # Listen for incoming connections
+    sock.listen(1)
+    return sock
+
 
 def get_config(path):
 
@@ -27,15 +47,6 @@ def get_config(path):
         if (line[0] == "SOCKET_CODE_OFF"):
             print "SOCKET_CODE_OFF :", line[1]
             SOCKET_CODE_OFF = int(line[1])
-        if (line[0] == "DURATION"):
-            print "DURATION :", line[1]
-            DURATION = int(line[1])
-        if (line[0] == "TEMP"):
-            print "TEMP :", line[1]
-            TEMP = int(line[1])
-        if (line[0] == "NAME"):
-            print "NAME :", line[1]
-            NAME = line[1]
     fd_config.close()
 
 def read_temperature():
@@ -67,6 +78,20 @@ def dump_db():
     for data in c.fetchall():
         print data
 
+def control_temp(target_temp):
+
+    while True:
+
+        # get temperature
+        temp = read_temperature()
+
+        # adjust temperature with socket
+        if temp > target_temp + 0.5:
+             socket_command(SOCKET_CODE_ON);
+        if temp < target_temp - 0.5:
+            socket_command(SOCKET_CODE_OFF);
+
+
 if __name__ == '__main__':
 
     if (len(sys.argv) < 2):
@@ -75,44 +100,39 @@ if __name__ == '__main__':
 
     # check if 433Mhz tools are compiled
     if os.path.exists("/opt/beer_machine/433_send") == False:
-        print "433_send tool is not compiled. exiting.."
-        sys.exit(0)
+    print "433_send tool is not compiled. exiting.."
+    sys.exit(0)
 
     # read configuration file and set variables
     get_config(sys.argv[1])
 
-    # database init
-    conn = sqlite3.connect('/opt/beer_machine/beer_machine.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS fermentation_temp
-             (date text, temperature float, switch int)''')
-    conn.close()
-
     # before getting started, we switch off the plug to be in a known state
     socket_status = socket_command(SOCKET_CODE_OFF);
 
-    # infinite loop to do stuff
-    while True:
+    # if standalone mode, call control loop directly (simple mode)
+    if (sys.argv[len(sys.argv)-1]) == '-s':
+        while True:
+            control_temp()
+            time.sleep(30)
 
-        # get temperature
-        temp = read_temperature()
+    # UDS socket init
+    uds_sock = sock_init()
 
-        # store in db
-        conn = sqlite3.connect('/opt/beer_machine/beer_machine.db')
-        c = conn.cursor()
-        c.execute("INSERT INTO fermentation_temp VALUES (?, ?, ?)", (datetime.datetime.now(), temp,
-                                                                     socket_status))
-        conn.commit()
+    # Wait for a connection
+    print 'waiting for a connection'
+    connection, client_address = sock.accept()
 
-        # refresh web page
-        webui.refresh(conn)
-        conn.close()
+    print "connection successful to ", client_address
 
-        # adjust temperature with socket
-        # TODO: use pid
-        if temp > 20.5:
-            socket_status = socket_command(SOCKET_CODE_ON);
-        if temp < 20:
-            socket_status = socket_command(SOCKET_CODE_OFF);
+        while True:
+            data = connection.recv(16)
+            print 'data received', data
 
-        time.sleep(30)
+    # once connect, wait for commands
+
+    # database init
+    #conn = sqlite3.connect('/opt/beer_machine/beer_machine.db')
+    #c = conn.cursor()
+    #c.execute('''CREATE TABLE IF NOT EXISTS fermentation_temp
+#             (date text, temperature float, switch int)''')
+#    conn.close()
