@@ -4,11 +4,11 @@ import sys, os, time, signal, socket
 import sqlite3, datetime
 import webui
 
-SOCKET_CODE_ON = 0
-SOCKET_CODE_OFF = 0
+PLUG_CODE_ON = 0
+PLUG_CODE_OFF = 0
 W1_PATH = ""
 
-def sock_init():
+def socket_init():
 
     server_address = './beer_socket'
 
@@ -33,7 +33,7 @@ def sock_init():
 
 def get_config(path):
 
-    global W1_PATH, SOCKET_CODE_ON, SOCKET_CODE_OFF
+    global W1_PATH, PLUG_CODE_ON, PLUG_CODE_OFF, STANDALONE_TEMP
     fd_config = open(path, 'r')
     for line in fd_config.readlines():
         line = " ".join(line.split())
@@ -41,12 +41,15 @@ def get_config(path):
         if (line[0] == "W1_PATH"):
             print "W1_PATH :", line[1]
             W1_PATH = line[1]
-        if (line[0] == "SOCKET_CODE_ON"):
-            print "SOCKET_CODE_ON :", line[1]
-            SOCKET_CODE_ON = int(line[1])
-        if (line[0] == "SOCKET_CODE_OFF"):
-            print "SOCKET_CODE_OFF :", line[1]
-            SOCKET_CODE_OFF = int(line[1])
+        if (line[0] == "PLUG_CODE_ON"):
+            print "PLUG_CODE_ON :", line[1]
+            PLUG_CODE_ON = int(line[1])
+        if (line[0] == "PLUG_CODE_OFF"):
+            print "PLUG_CODE_OFF :", line[1]
+            PLUG_CODE_OFF = int(line[1])
+        if (line[0] == "STANDALONE_TEMP"):
+            print "STANDALONE_TEMP :", line[1]
+            STANDALONE_TEMP = int(line[1])
     fd_config.close()
 
 def read_temperature():
@@ -61,22 +64,22 @@ def read_temperature():
     print "current temperature :", temp_flt
     return temp_flt
 
-def socket_command(value):
+def plug_command(value):
 
     cmd = "/opt/beer_machine/433_send %d %d" % (value, 24)
     os.system(cmd)
-    if value == SOCKET_CODE_ON:
+    if value == PLUG_CODE_ON:
         return 1
     else:
         return 0
 
-def dump_db():
+#def dump_db():
 
-    conn = sqlite3.connect('/opt/beer_machine/beer_machine.db')
-    c = conn.cursor()
-    c.execute("SELECT * FROM fermentation_temp")
-    for data in c.fetchall():
-        print data
+#    conn = sqlite3.connect('beer_machine.db')
+#    c = conn.cursor()
+#    c.execute("SELECT * FROM fermentation_temp")
+#    for data in c.fetchall():
+#        print data
 
 def control_temp(target_temp):
 
@@ -87,9 +90,9 @@ def control_temp(target_temp):
 
         # adjust temperature with socket
         if temp > target_temp + 0.5:
-             socket_command(SOCKET_CODE_ON);
+             plug_command(PLUG_CODE_ON);
         if temp < target_temp - 0.5:
-            socket_command(SOCKET_CODE_OFF);
+            plug_command(PLUG_CODE_OFF);
 
 
 if __name__ == '__main__':
@@ -99,40 +102,53 @@ if __name__ == '__main__':
         sys.exit(0)
 
     # check if 433Mhz tools are compiled
-    if os.path.exists("/opt/beer_machine/433_send") == False:
-    print "433_send tool is not compiled. exiting.."
-    sys.exit(0)
+#    if os.path.exists("/opt/beer_machine/433_send") == False:
+#        print "433_send tool is not compiled. exiting.."
+#    sys.exit(0)
 
     # read configuration file and set variables
     get_config(sys.argv[1])
 
     # before getting started, we switch off the plug to be in a known state
-    socket_status = socket_command(SOCKET_CODE_OFF);
+    plug_status = plug_command(PLUG_CODE_OFF)
 
     # if standalone mode, call control loop directly (simple mode)
     if (sys.argv[len(sys.argv)-1]) == '-s':
         while True:
-            control_temp()
+            control_temp(STANDALONE_TEMP)
             time.sleep(30)
 
-    # UDS socket init
-    uds_sock = sock_init()
-
-    # Wait for a connection
-    print 'waiting for a connection'
-    connection, client_address = sock.accept()
-
-    print "connection successful to ", client_address
-
-        while True:
-            data = connection.recv(16)
-            print 'data received', data
-
-    # once connect, wait for commands
-
     # database init
-    #conn = sqlite3.connect('/opt/beer_machine/beer_machine.db')
-    #c = conn.cursor()
-    #c.execute('''CREATE TABLE IF NOT EXISTS fermentation_temp
-#             (date text, temperature float, switch int)''')
-#    conn.close()
+    conn = sqlite3.connect('beer_machine.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS batch_list
+             (date TEXT, temperature float, name TEXT, status INT)''')
+    conn.close()
+
+    # UDS socket init
+    uds_sock = socket_init()
+
+    # command list :
+    # create(name, fermentation temperature, fermentation time) : create new batch
+    # start(name): start batch
+    # stop(name): stop batch
+    # delete(name) : remove batch from db
+
+    while True:
+
+        # Wait for a connection
+        print 'waiting for a connection'
+        connection, client_address = uds_sock.accept()
+
+        print "inbound connection successful "
+        while True:
+            data = connection.recv(256)
+            if not data:
+                break
+            print 'data received : ', data
+            command = data.split(" ")
+            if command[0] == "create" :
+                print "receiving create"
+
+        connection.close()
+        print 'connection close'

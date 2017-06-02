@@ -7,7 +7,9 @@ app = express();
 var path = require('path');
 
 var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('beer_machine.db');
+var db = new sqlite3.Database('../beer_machine.db');
+
+var net = require('net');
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.json()); // support json encoded bodies
@@ -18,24 +20,50 @@ app.set('view engine', 'ejs')
 // set public/ as static path
 app.use(express.static('public'));
 
+// socket init
+
+var client = net.createConnection("../beer_socket");
+
+client.on("connect", function() {
+  console.log("connected !");
+
+  client.write("create IPA 21 21 toto")
+
+});
+
+client.on("data", function(data) {
+    console.log("receiving data over socket");
+});
+
+
 //  routing for root page (data display)
 app.get('/', function(request, response) {
 
-  db.serialize(function() {
-    if (request.body && request.body.tables) {
-      db.all("SELECT * FROM " +request.body.tables, function (err, rows) {
-        current_batch_temp = rows;
-      });
-    }
-    else {
-      db.all("SELECT * FROM Cascade_IPA", function (err, rows) {
-        current_batch_temp = rows;
-      });
-    }
+  // first, we need to get the batch list to load the on-going brew.
+  // TODO if not,then we load the latest (timestamp)
+  db.all("SELECT * FROM batch_list", function (err, rows) {
+    batch_list = rows;
 
-  db.all("SELECT name FROM sqlite_master WHERE type='table'", function (err, rows) {
-    response.render('index', {point_list:current_batch_temp, table_list:rows})
-    });
+    //check if there is one (and only one) on-going brew
+    status_count = 0;
+    rows.forEach( function(row) {
+      if (row.status == 1 & status_count != -1) {
+        if (status_count < 1) {
+          status_count++;
+          on_going_brew = row.name;
+        }
+        else
+        status_count = -1;
+      }
+    })
+
+    // use it for default display
+    if (status_count == 1) {
+      console.log(on_going_brew);
+      db.all("SELECT * FROM " + on_going_brew, function (err, rows) {
+        response.render('index', {point_list:rows, table_list:batch_list})
+      });
+    }
   });
 });
 
