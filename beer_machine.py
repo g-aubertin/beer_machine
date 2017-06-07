@@ -2,7 +2,7 @@
 
 import sys, os, time, signal, socket
 import sqlite3, datetime
-import webui
+import webui, threading
 
 PLUG_CODE_ON = 0
 PLUG_CODE_OFF = 0
@@ -81,9 +81,10 @@ def plug_command(value):
 #    for data in c.fetchall():
 #        print data
 
-def control_temp(target_temp):
+def worker_temp(target_temp):
 
-    while True:
+   t = threading.currentThread()
+   while (t.stop_signal == False):
 
         # get temperature
         temp = read_temperature()
@@ -94,6 +95,8 @@ def control_temp(target_temp):
         if temp < target_temp - 0.5:
             plug_command(PLUG_CODE_OFF);
 
+        time.sleep(10)
+
 
 if __name__ == '__main__':
 
@@ -102,9 +105,9 @@ if __name__ == '__main__':
         sys.exit(0)
 
     # check if 433Mhz tools are compiled
-#    if os.path.exists("/opt/beer_machine/433_send") == False:
-#        print "433_send tool is not compiled. exiting.."
-#    sys.exit(0)
+    #    if os.path.exists("/opt/beer_machine/433_send") == False:
+    #       print "433_send tool is not compiled. exiting.."
+    #       sys.exit(0)
 
     # read configuration file and set variables
     get_config(sys.argv[1])
@@ -140,15 +143,23 @@ if __name__ == '__main__':
         print 'waiting for a connection'
         connection, client_address = uds_sock.accept()
 
-        print "inbound connection successful "
+        print "inbound connection successful"
         while True:
             data = connection.recv(256)
             if not data:
                 break
             print 'data received : ', data
             command = data.split(" ")
-            if command[0] == "create" :
-                print "receiving create"
+
+            if command[0] == "start" :
+                print "receiving start"
+                t = threading.Thread(target=worker_temp, args=(21,))
+                t.stop_signal = False
+                t.start()
+
+            if command[0] == "stop" :
+                print "receiving start"
+                t.stop_signal = True
 
         connection.close()
         print 'connection close'
