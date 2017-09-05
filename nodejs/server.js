@@ -35,35 +35,25 @@ client.on("data", function(data) {
     console.log("receiving data over socket");
 });
 
-
-//  routing for root page (data display)
+//  routing for root page (dashboard)
 app.get('/', function(request, response) {
 
-  // first, we need to get the batch list to load the on-going brew.
-  // TODO if not,then we load the latest (timestamp)
+  console.log("receiving GET on /")
+  // first, we need to get the batch list to load the on-going brew (status = 1).
+  // if not,then we load the first in table
   db.all("SELECT * FROM batch_list", function (err, rows) {
-    batch_list = rows;
-
-    //check if there is one (and only one) on-going brew
-    status_count = 0;
+    batch_list = rows
+    selected_brew = rows[0]
     rows.forEach( function(row) {
-      if (row.status == 1 & status_count != -1) {
-        if (status_count < 1) {
-          status_count++;
-          on_going_brew = row.name;
-        }
-        else
-        status_count = -1;
+      if (row.status == 1) {
+        selected_brew = row.name;
       }
-    })
+    });
 
     // use it for default display
-    if (status_count == 1) {
-      console.log(on_going_brew);
-      db.all("SELECT * FROM " + on_going_brew, function (err, rows) {
-        response.render('index', {point_list:rows, table_list:batch_list})
-      });
-    }
+    db.all("SELECT * FROM " + selected_brew, function (err, rows) {
+      response.render('index', {point_list:rows, table_list:batch_list})
+    });
   });
 });
 
