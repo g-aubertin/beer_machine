@@ -27,7 +27,7 @@ var client = net.createConnection("../beer_socket");
 client.on("connect", function() {
   console.log("connected !");
 
-  client.write("create IPA 21 21 toto")
+  client.write("start")
 
 });
 
@@ -50,6 +50,7 @@ app.get('/', function(request, response) {
       }
     });
 
+    selected_brew = "test_table"
     // use it for default display
     db.all("SELECT * FROM " + selected_brew, function (err, rows) {
       response.render('index', {point_list:rows, table_list:batch_list})
