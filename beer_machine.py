@@ -3,8 +3,10 @@
 import sys, os, time, signal, socket
 import sqlite3, datetime
 import webui, threading
+from random import randint
 
 W1_PATH = ""
+test_mode = 0
 
 def socket_init():
 
@@ -53,14 +55,29 @@ def read_temperature():
     print "current temperature :", temp_flt
     return temp_flt
 
-def worker_temp(target_temp):
+def worker_temp():
 
-   t = threading.currentThread()
-   while (t.stop_signal == False):
+    conn = sqlite3.connect('beer_machine.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS test_table (date TEXT, temperature float)''')
+    conn.close()
+
+    t = threading.currentThread()
+    while (t.stop_signal == False):
 
         # get temperature
-        temp = read_temperature()
+        if test_mode == 0:
+            temp = read_temperature()
+        else:
+            temp = randint(20,25)
 
+        # save temp in db
+        conn = sqlite3.connect('beer_machine.db')
+        c = conn.cursor()
+        print "adding value", temp, "to db"
+        c.execute("INSERT INTO test_table VALUES (?, ?)", (datetime.datetime.now(), temp))
+        conn.commit()
+        conn.close()
         time.sleep(10)
 
 
@@ -69,6 +86,10 @@ if __name__ == '__main__':
     if (len(sys.argv) < 2):
         print "configuration file needed"
         sys.exit(0)
+
+    if sys.argv[1] == '-t':
+        print "test mode enabled"
+        test_mode = 1
 
     # database init
     conn = sqlite3.connect('beer_machine.db')
@@ -102,7 +123,7 @@ if __name__ == '__main__':
 
             if command[0] == "start" :
                 print "receiving start"
-                t = threading.Thread(target=worker_temp, args=(21,))
+                t = threading.Thread(target=worker_temp)
                 t.stop_signal = False
                 t.start()
 
