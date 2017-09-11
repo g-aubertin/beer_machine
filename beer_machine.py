@@ -63,23 +63,24 @@ def worker_temp():
     conn.close()
 
     t = threading.currentThread()
-    while (t.stop_signal == False):
+    while (True):
 
-        # get temperature
-        if test_mode == 0:
-            temp = read_temperature()
-        else:
-            temp = randint(20,25)
+        if (t.stop_signal == False):
+            # get temperature
+            if test_mode == 0:
+                temp = read_temperature()
+            else:
+                temp = randint(20,25)
 
-        # save temp in db
-        conn = sqlite3.connect('beer_machine.db')
-        c = conn.cursor()
-        print "adding value", temp, "to db"
-        c.execute("INSERT INTO test_table VALUES (?, ?)", (datetime.datetime.now(), temp))
-        conn.commit()
-        conn.close()
+            # save temp in db
+            conn = sqlite3.connect('beer_machine.db')
+            c = conn.cursor()
+            print "adding value", temp, "to db"
+            c.execute("INSERT INTO test_table VALUES (?, ?)", (datetime.datetime.now(), temp))
+            conn.commit()
+            conn.close()
+
         time.sleep(10)
-
 
 if __name__ == '__main__':
 
@@ -107,6 +108,11 @@ if __name__ == '__main__':
     # stop(name): stop batch
     # delete(name) : remove batch from db
 
+
+    t = threading.Thread(target=worker_temp)
+    t.stop_signal = True
+    t.start()
+
     while True:
 
         # Wait for a connection
@@ -123,13 +129,15 @@ if __name__ == '__main__':
 
             if command[0] == "start" :
                 print "receiving start"
-                t = threading.Thread(target=worker_temp)
                 t.stop_signal = False
-                t.start()
 
             if command[0] == "stop" :
-                print "receiving start"
+                print "receiving stop"
                 t.stop_signal = True
+
+            if command[0] == "get_status" :
+                print "status requested"
+                connection.sendall("stopped")
 
         connection.close()
         print 'connection close'

@@ -93,7 +93,16 @@
                   <p> threshold underrun: 3 </p>
               </div>
             </div>
-              <button type="button" class="btn btn-danger btn-lg center-block">Shutdown</button>
+            <!-- change button depending on daemon status -->
+              <form action="/" method="post">
+              <%   if (beer_machine == 0) { %>
+                <input type="hidden" name="button_value" value="start" />
+                <button type="submit"  class="btn btn-success btn-lg center-block">Start</button>
+              <% } else { %>
+                <input type="hidden" name="button_value" value="stop" />
+                <button type="submit"  class="btn btn-danger btn-lg center-block">Stop</button>
+              <% } %>
+              </form>
           </div>
 
         </div>

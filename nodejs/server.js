@@ -1,5 +1,7 @@
 console.log('starting server.js');
 
+var daemon_status = 0
+
 // include and initialize libraries
 var express = require('express');
 app = express();
@@ -26,13 +28,21 @@ var client = net.createConnection("../beer_socket");
 
 client.on("connect", function() {
   console.log("connected !");
-
-  client.write("start")
+  client.write("get_status")
 
 });
 
 client.on("data", function(data) {
-    console.log("receiving data over socket");
+
+  console.log(data.toString())
+
+  if (data.toString() == "running") {
+    daemon_status = 1
+  }
+  
+  if (data.toString() == "stopped") {
+    daemon_status = 0
+  }
 });
 
 //  routing for root page (dashboard)
@@ -53,7 +63,7 @@ app.get('/', function(request, response) {
     selected_brew = "test_table"
     // use it for default display
     db.all("SELECT * FROM " + selected_brew, function (err, rows) {
-      response.render('index', {point_list:rows, table_list:batch_list})
+      response.render('index', {point_list:rows, table_list:batch_list, beer_machine:daemon_status})
     });
   });
 });
@@ -72,7 +82,7 @@ app.post('/', function(req, res) {
           batch_switch = rows;
           });
         db.all("SELECT name FROM sqlite_master WHERE type='table'", function (err, rows) {
-          res.render('index', {point_list:batch_switch, table_list:rows})
+          res.render('index', {point_list:batch_switch, table_list:rows, beer_machine:daemon_status})
           });
       });
     }
@@ -80,6 +90,22 @@ app.post('/', function(req, res) {
     // new batch button
     if (req.body && (req.body.new_batch === '')) {
       res.redirect('/new_batch');
+    }
+
+    // stop button
+    if (req.body && (req.body.button_value === "stop")) {
+      console.log("stop pushed")
+      client.write("stop")
+      daemon_status = 0
+      res.redirect('/');
+    }
+
+    // stop button
+    if (req.body && (req.body.button_value === "start")) {
+      console.log("start pushed")
+      client.write("start")
+      daemon_status = 1
+      res.redirect('/');
     }
 });
 
