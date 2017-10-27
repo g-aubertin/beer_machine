@@ -63,9 +63,15 @@ def worker_temp():
     conn.close()
 
     t = threading.currentThread()
+
+    print "worker thread started"
+
     while (True):
 
-        if (t.stop_signal == False):
+        if (t.stop_signal == True):
+            break
+        else:
+            print "stop signal : ", t.stop_signal
             # get temperature
             if test_mode == 0:
                 temp = read_temperature()
@@ -88,7 +94,7 @@ if __name__ == '__main__':
         print "configuration file needed"
         sys.exit(0)
 
-    if sys.argv[1] == '-t':
+    if sys.argv[2] == '-t':
         print "test mode enabled"
         test_mode = 1
 
@@ -108,11 +114,6 @@ if __name__ == '__main__':
     # stop(name): stop batch
     # delete(name) : remove batch from db
 
-
-    t = threading.Thread(target=worker_temp)
-    t.stop_signal = True
-    t.start()
-
     while True:
 
         # Wait for a connection
@@ -120,24 +121,35 @@ if __name__ == '__main__':
         connection, client_address = uds_sock.accept()
 
         print "inbound connection successful"
+
         while True:
-            data = connection.recv(256)
+
+            try:
+                data = connection.recv(256)
+            except KeyboardInterrupt:
+                print "SIGINT received while waiting for data !"
+                t.stop_signal = True
+                t.join()
+                print "worker thread has been stopped. exiting...."
+                sys.exit(0)
+
             if not data:
                 break
-            print 'data received : ', data
             command = data.split(" ")
 
             if command[0] == "start" :
                 print "receiving start"
+                t = threading.Thread(target=worker_temp)
                 t.stop_signal = False
+                t.start()
+                print "worker thread started"
 
             if command[0] == "stop" :
                 print "receiving stop"
                 t.stop_signal = True
+                t.join()
+                print "worker thread stopped"
 
             if command[0] == "get_status" :
                 print "status requested"
                 connection.sendall("stopped")
-
-        connection.close()
-        print 'connection close'
