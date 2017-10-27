@@ -8,6 +8,13 @@ from random import randint
 W1_PATH = ""
 test_mode = 0
 
+class state_machine:
+    STOPPED = "stopped"
+    RUNNING = "running"
+    SHUTDOWN = "shutdown"
+
+state = state_machine.STOPPED
+
 def socket_init():
 
     server_address = './beer_socket'
@@ -138,18 +145,20 @@ if __name__ == '__main__':
             command = data.split(" ")
 
             if command[0] == "start" :
-                print "receiving start"
+                print "from socket: receiving start"
                 t = threading.Thread(target=worker_temp)
                 t.stop_signal = False
                 t.start()
+                state = state_machine.RUNNING
                 print "worker thread started"
 
             if command[0] == "stop" :
-                print "receiving stop"
+                print "from socket: receiving stop"
                 t.stop_signal = True
                 t.join()
+                state = state_machine.STOPPED
                 print "worker thread stopped"
 
             if command[0] == "get_status" :
-                print "status requested"
-                connection.sendall("stopped")
+                print "from socket: status requested"
+                connection.sendall(state)

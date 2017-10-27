@@ -23,11 +23,10 @@ app.set('view engine', 'ejs')
 app.use(express.static('public'));
 
 // socket init
-
 var client = net.createConnection("../beer_socket");
 
 client.on("connect", function() {
-  console.log("connected !");
+  console.log("connected to socket !");
   client.write("get_status")
 
 });
@@ -37,10 +36,11 @@ client.on("data", function(data) {
   console.log(data.toString())
 
   if (data.toString() == "running") {
+    console.log("beer_machine daemon is in RUNNING state")
     daemon_status = 1
   }
-  
-  if (data.toString() == "stopped") {
+
+  if (data.toString() == "beer_machine daemon is in STOPPED state") {
     daemon_status = 0
   }
 });

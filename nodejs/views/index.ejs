@@ -42,7 +42,11 @@
       <div class=" panel panel-primary">
         <div class="panel-heading text-center">System status</div>
         <div class="panel-body">
+          <%   if (beer_machine == 0) { %>
+          <span style ="font-size:27px;"> Stopped </span> <i class="fa fa-times fa-3x pull-right" aria-hidden="true" style="color:red"> </i> </p>
+          <% } else { %>
           <span style ="font-size:27px;"> Running </span> <i class="fa fa-check-circle fa-3x pull-right" aria-hidden="true" style="color:green"> </i> </p>
+          <% } %>
         </div>
       </div>
     </div>
