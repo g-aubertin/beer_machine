@@ -27,7 +27,7 @@ var client = net.createConnection("../beer_socket");
 
 client.on("connect", function() {
   console.log("connected to socket !");
-  client.write("get_status")
+  client.write("socket request: status")
 
 });
 
@@ -36,11 +36,11 @@ client.on("data", function(data) {
   console.log(data.toString())
 
   if (data.toString() == "running") {
-    console.log("beer_machine daemon is in RUNNING state")
+    console.log("socket response: beer_machine daemon is in RUNNING state")
     daemon_status = 1
   }
 
-  if (data.toString() == "beer_machine daemon is in STOPPED state") {
+  if (data.toString() == "socket response: beer_machine daemon is in STOPPED state") {
     daemon_status = 0
   }
 });

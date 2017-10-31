@@ -78,7 +78,6 @@ def worker_temp():
         if (t.stop_signal == True):
             break
         else:
-            print "stop signal : ", t.stop_signal
             # get temperature
             if test_mode == 0:
                 temp = read_temperature()
