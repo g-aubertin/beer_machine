@@ -13,6 +13,12 @@ class state_machine:
     RUNNING = "running"
     SHUTDOWN = "shutdown"
 
+class batch_status:
+    READY = "ready"
+    RUNNING = "running"
+    STOPPED = "stopped"
+    ENDED = "ended"
+
 state = state_machine.STOPPED
 
 def socket_init():
@@ -108,7 +114,7 @@ if __name__ == '__main__':
     conn = sqlite3.connect('beer_machine.db')
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS batch_list
-             (date TEXT, name TEXT, temperature float, duration INT, status INT)''')
+             (date TEXT, name TEXT, temperature float, duration INT, status TEXT)''')
     conn.close()
 
     # UDS socket init
@@ -152,13 +158,21 @@ if __name__ == '__main__':
                 c.execute("CREATE TABLE IF NOT EXISTS %s (date TEXT, temperature float)" % command[1])
                 # add entry in table_list : creation date - name - temperature - duration -status
                 c.execute("INSERT INTO batch_list VALUES (?, ?, ?, ?, ?)",
-                    (time.ctime(), command[1], float(command[2]), int(command[3]), 0))
+                    (time.ctime(), command[1], float(command[2]), int(command[3]), batch_status.READY))
                 conn.commit()
+
+                # if there is an on-going batch, change it to "ENDED"
+                # c.execute("SELECT * FROM batch_list WHERE status = 'on-going'")
+                # rows = c.fetchall()
+                # if rows:
+                    # todo : pop-up to explain that the on-going batch will be moved to ENDED
+                    # and move it to ENDED
+
                 conn.close()
 
             if command[0] == "get_status" :
                 print "from socket: STATUS requested"
-                connection.sendall(state)
+                connection.sendall("status "+ state)
 
             if command[0] == "start" :
                 print "from socket: START requested"

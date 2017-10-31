@@ -27,21 +27,26 @@ var client = net.createConnection("../beer_socket");
 
 client.on("connect", function() {
   console.log("connected to socket !");
-  client.write("socket request: status")
+  client.write("get_status")
 
 });
 
+// socket callback
 client.on("data", function(data) {
 
   console.log(data.toString())
+  data_tab = data.toString().split(" ")
 
-  if (data.toString() == "running") {
-    console.log("socket response: beer_machine daemon is in RUNNING state")
-    daemon_status = 1
-  }
+  if (data_tab[0].toString() == "status") {
+    if (data_tab[1].toString() == "running") {
+      console.log("socket response: beer_machine daemon is in RUNNING state")
+      daemon_status = 1
+    }
 
-  if (data.toString() == "socket response: beer_machine daemon is in STOPPED state") {
-    daemon_status = 0
+    if (data_tab[1].toString() == "stopped") {
+      console.log("socket response: beer_machine daemon is in STOPPED state")
+      daemon_status = 0
+    }
   }
 });
 
@@ -49,23 +54,44 @@ client.on("data", function(data) {
 app.get('/', function(request, response) {
 
   console.log("receiving GET on /")
-  // first, we need to get the batch list to load the on-going brew (status = 1).
-  // if not,then we load the first in table
-  db.all("SELECT * FROM batch_list", function (err, rows) {
-    batch_list = rows
-    selected_brew = rows[0]
-    rows.forEach( function(row) {
-      if (row.status == 1) {
-        selected_brew = row.name;
-      }
-    });
 
-    selected_brew = "test_table"
-    // use it for default display
-    db.all("SELECT * FROM " + selected_brew, function (err, rows) {
-      response.render('index', {point_list:rows, table_list:batch_list, beer_machine:daemon_status})
-    });
+  //first, let's fetch batch_list for batch history dropdown menu
+  db.all("SELECT * FROM batch_list", function (err, rows) {
+    batch_list = rows;
   });
+
+  // check if there is an on-going brew (status = "running"), and select it for display.
+  // otherwise, display nothing
+  db.all("SELECT * FROM batch_list WHERE status='running'", function (err, rows) {
+    rows.forEach( function(row) {
+      selected_brew = row.name;
+      console.log("selected batch:" + row.name )
+      db.all("SELECT * FROM " + selected_brew, function (err, rows) {
+        response.render('index', {point_list:rows, table_list:batch_list, beer_machine:daemon_status})
+      });
+    });
+    response.render('index', {point_list:[], table_list:batch_list, beer_machine:daemon_status})
+  });
+});
+
+//  routing for monitoring page with selected batch
+app.get('/monitoring/:batch', function(request, response) {
+
+  console.log("receiving GET on /monitoring/:batch !")
+
+  var batch_name = request.params.batch;
+  console.log(batch_name)
+
+  //first, let's fetch batch_list for batch history dropdown menu
+  db.all("SELECT * FROM batch_list", function (err, rows) {
+    batch_list = rows;
+  });
+
+  // we need to get the associate batch information to render
+  db.all("SELECT * FROM " + batch_name, function (err, rows) {
+    response.render('monitoring', {point_list:rows, table_list:batch_list, beer_machine:daemon_status})
+  });
+
 });
 
 // routing for buttons
@@ -112,15 +138,16 @@ app.post('/', function(req, res) {
 // routing for new batch page
 app.get('/new_batch', function(req, res){
   console.log('redirecting to new_batch page');
-  db.all("SELECT name FROM sqlite_master WHERE type='table'", function (err, rows) {
+  db.all("SELECT * FROM batch_list", function (err, rows) {
     res.render('new_batch', {table_list:rows});
-    });
+  });
+
 });
 
 // routing for new batch page
 app.get('/system', function(req, res){
   console.log('redirecting to new_batch page');
-  db.all("SELECT name FROM sqlite_master WHERE type='table'", function (err, rows) {
+  db.all("SELECT * FROM batch_list", function (err, rows) {
     res.render('system', {table_list:rows});
     });
 });
@@ -135,6 +162,7 @@ app.post('/new_batch', function (req, res) {
 
     //send create msg through socket
     client.write("create" + " " + name + " " + temperature + " " + duration)
+
     res.redirect('/');
 
 });

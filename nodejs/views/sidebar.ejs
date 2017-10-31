@@ -1,16 +1,24 @@
 <!-- sidebar -->
 <div class="col-sm-2 sidebar hidden-xs">
   <ul class="nav nav-sidebar">
-    <li class="active"><a href="/">Overview <span class="sr-only">(current)</span></a></li>
-    <li><a href="new_batch">new batch</a></li>
+
+    <!-- overview -->
+    <li class="active"><a href="../">Overview <span class="sr-only">(current)</span></a></li>
+
+    <!-- new batch -->
+    <li><a href="../new_batch">new batch</a></li>
+
+    <!-- monitoring -->
     <li class="dropdown">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown">batch history <span class="caret"></span> </a>
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown">batch list <span class="caret"></span> </a>
       <ul class="dropdown-menu forAnimate" role="menu">
         <% table_list.forEach(function(row){ %>
-          <li><a href="#"><%=row.name%></a></li>
+          <li><a href="../monitoring/<%=row.name%>"><%=row.name%></a></li>
           <% }) %>
         </ul>
       </li>
-      <li><a href="system">System</a></li>
+
+    <!-- system -->
+      <li><a href="../system">System</a></li>
     </ul>
   </div>
