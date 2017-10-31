@@ -89,7 +89,7 @@ def worker_temp():
             conn = sqlite3.connect('beer_machine.db')
             c = conn.cursor()
             print "adding value", temp, "to db"
-            c.execute("INSERT INTO test_table VALUES (?, ?)", (datetime.datetime.now(), temp))
+            c.execute("INSERT INTO test_table VALUES (?, ?)", (time.ctime(), temp))
             conn.commit()
             conn.close()
 
@@ -109,7 +109,7 @@ if __name__ == '__main__':
     conn = sqlite3.connect('beer_machine.db')
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS batch_list
-             (date TEXT, temperature float, name TEXT, status INT)''')
+             (date TEXT, name TEXT, temperature float, duration INT, status INT)''')
     conn.close()
 
     # UDS socket init
@@ -144,8 +144,25 @@ if __name__ == '__main__':
                 break
             command = data.split(" ")
 
+            if command[0] == "create" :
+                print "from socket: CREATE requested : ", command
+                conn = sqlite3.connect('beer_machine.db')
+                c = conn.cursor()
+
+                # create new table
+                c.execute("CREATE TABLE IF NOT EXISTS %s (date TEXT, temperature float)" % command[1])
+                # add entry in table_list : creation date - name - temperature - duration -status
+                c.execute("INSERT INTO batch_list VALUES (?, ?, ?, ?, ?)",
+                    (time.ctime(), command[1], float(command[2]), int(command[3]), 0))
+                conn.commit()
+                conn.close()
+
+            if command[0] == "get_status" :
+                print "from socket: STATUS requested"
+                connection.sendall(state)
+
             if command[0] == "start" :
-                print "from socket: receiving start"
+                print "from socket: START requested"
                 t = threading.Thread(target=worker_temp)
                 t.stop_signal = False
                 t.start()
@@ -153,12 +170,8 @@ if __name__ == '__main__':
                 print "worker thread started"
 
             if command[0] == "stop" :
-                print "from socket: receiving stop"
+                print "from socket: STOP requested"
                 t.stop_signal = True
                 t.join()
                 state = state_machine.STOPPED
                 print "worker thread stopped"
-
-            if command[0] == "get_status" :
-                print "from socket: status requested"
-                connection.sendall(state)

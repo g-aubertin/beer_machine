@@ -132,13 +132,11 @@ app.post('/new_batch', function (req, res) {
     var temperature = req.body.temperature
     var duration = req.body.duration;
     console.log(name + " " + temperature + " " + duration);
-    db.serialize(function() {
-      db.run("CREATE TABLE IF NOT EXISTS "+ name +" (date TEXT, temperature NUMERIC, switch NUMERIC)", function(err){
-        if (err)
-          console.log(err);
-        res.redirect('/');
-      });
-    });
+
+    //send create msg through socket
+    client.write("create" + " " + name + " " + temperature + " " + duration)
+    res.redirect('/');
+
 });
 
 app.listen(8080);
