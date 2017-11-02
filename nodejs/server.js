@@ -50,7 +50,9 @@ client.on("data", function(data) {
   }
 });
 
-//  routing for root page (dashboard)
+/////////////////////////////
+// routing for overview page
+/////////////////////////////
 app.get('/', function(request, response) {
 
   console.log("receiving GET on /")
@@ -74,7 +76,9 @@ app.get('/', function(request, response) {
   });
 });
 
-//  routing for monitoring page with selected batch
+//////////////////////////////////////////////////
+// routing for monitoring page with selected batch
+//////////////////////////////////////////////////
 app.get('/monitoring/:batch', function(request, response) {
 
   console.log("receiving GET on /monitoring/:batch !")
@@ -94,7 +98,9 @@ app.get('/monitoring/:batch', function(request, response) {
 
 });
 
-// routing for buttons
+////////////////////////////
+// routing for buttons POST
+///////////////////////////
 app.post('/', function(req, res) {
 
     // debug
@@ -135,7 +141,9 @@ app.post('/', function(req, res) {
     }
 });
 
-// routing for new batch page
+//////////////////////////////
+// routing for new batch GET
+//////////////////////////////
 app.get('/new_batch', function(req, res){
   console.log('redirecting to new_batch page');
   db.all("SELECT * FROM batch_list", function (err, rows) {
@@ -144,15 +152,9 @@ app.get('/new_batch', function(req, res){
 
 });
 
-// routing for new batch page
-app.get('/system', function(req, res){
-  console.log('redirecting to new_batch page');
-  db.all("SELECT * FROM batch_list", function (err, rows) {
-    res.render('system', {table_list:rows});
-    });
-});
-
-//routing for new_batch post
+//////////////////////////////
+// routing for new batch POST
+//////////////////////////////
 app.post('/new_batch', function (req, res) {
     console.log('POST request to create a new batch');
     var name = req.body.batch_name;
@@ -166,5 +168,17 @@ app.post('/new_batch', function (req, res) {
     res.redirect('/');
 
 });
+
+
+///////////////////////////
+// routing for system GET
+///////////////////////////
+app.get('/system', function(req, res){
+  console.log('redirecting to new_batch page');
+  db.all("SELECT * FROM batch_list", function (err, rows) {
+    res.render('system', {table_list:rows});
+    });
+});
+
 
 app.listen(8080);
