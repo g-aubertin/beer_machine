@@ -68,12 +68,7 @@ def read_temperature():
     print "current temperature :", temp_flt
     return temp_flt
 
-def worker_temp():
-
-    conn = sqlite3.connect('beer_machine.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS test_table (date TEXT, temperature float)''')
-    conn.close()
+def worker_temp(table):
 
     t = threading.currentThread()
 
@@ -94,7 +89,7 @@ def worker_temp():
             conn = sqlite3.connect('beer_machine.db')
             c = conn.cursor()
             print "adding value", temp, "to db"
-            c.execute("INSERT INTO test_table VALUES (?, ?)", (time.ctime(), temp))
+            c.execute("INSERT INTO %s VALUES (?, ?)"% table, (time.ctime(), temp))
             conn.commit()
             conn.close()
 
@@ -176,7 +171,8 @@ if __name__ == '__main__':
 
             if command[0] == "start" :
                 print "from socket: START requested"
-                t = threading.Thread(target=worker_temp)
+                print command[1]
+                t = threading.Thread(target=worker_temp, args=[command[1]])
                 t.stop_signal = False
                 t.start()
                 state = state_machine.RUNNING

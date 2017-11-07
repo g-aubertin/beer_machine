@@ -84,18 +84,47 @@ app.get('/monitoring/:batch', function(request, response) {
   console.log("receiving GET on /monitoring/:batch !")
 
   var batch_name = request.params.batch;
-  console.log(batch_name)
 
   //first, let's fetch batch_list for batch history dropdown menu
   db.all("SELECT * FROM batch_list", function (err, rows) {
     batch_list = rows;
+    rows.forEach(function(row) {
+      if (row.name === batch_name) {
+        batch_info = row;
+      }
+      // we need to get the associate batch information to render
+    });
+    db.all("SELECT * FROM " + batch_name, function (err, rows) {
+      response.render('monitoring', {point_list:rows, table_list:batch_list, beer_machine:daemon_status})
+    });
   });
 
-  // we need to get the associate batch information to render
-  db.all("SELECT * FROM " + batch_name, function (err, rows) {
-    response.render('monitoring', {point_list:rows, table_list:batch_list, beer_machine:daemon_status})
-  });
+});
 
+//////////////////////////////////////////////////
+// routing for monitoring page POST
+//////////////////////////////////////////////////
+app.post('/monitoring/:batch', function(request, response) {
+
+  console.log("receiving POST on /monitoring/:batch !")
+
+  var batch_name = request.params.batch;
+
+  // stop button
+  if (request.body && (request.body.button_value === "stop")) {
+    console.log("stop pushed")
+    client.write("stop")
+    daemon_status = 0
+  }
+
+  // stop button
+  if (request.body && (request.body.button_value === "start")) {
+    console.log("start pushed")
+    client.write("start " + batch_name)
+    daemon_status = 1
+  }
+
+  response.redirect('/monitoring/' + batch_name);
 });
 
 ////////////////////////////
@@ -122,22 +151,6 @@ app.post('/', function(req, res) {
     // new batch button
     if (req.body && (req.body.new_batch === '')) {
       res.redirect('/new_batch');
-    }
-
-    // stop button
-    if (req.body && (req.body.button_value === "stop")) {
-      console.log("stop pushed")
-      client.write("stop")
-      daemon_status = 0
-      res.redirect('/');
-    }
-
-    // stop button
-    if (req.body && (req.body.button_value === "start")) {
-      console.log("start pushed")
-      client.write("start")
-      daemon_status = 1
-      res.redirect('/');
     }
 });
 
