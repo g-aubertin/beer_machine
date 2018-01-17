@@ -8,18 +8,20 @@ from random import randint
 W1_PATH = ""
 test_mode = 0
 
-class state_machine:
+# overall state machine of the daemon
+class daemon_status:
     STOPPED = "stopped"
     RUNNING = "running"
     SHUTDOWN = "shutdown"
 
+# per batch status
 class batch_status:
     READY = "ready"
     RUNNING = "running"
     STOPPED = "stopped"
     ENDED = "ended"
 
-state = state_machine.STOPPED
+state = daemon_status.STOPPED
 
 def socket_init():
 
@@ -43,6 +45,20 @@ def socket_init():
     sock.listen(1)
     return sock
 
+def database_init():
+
+        conn = sqlite3.connect('beer_machine.db')
+        c = conn.cursor()
+
+        # for new database
+        c.execute('''CREATE TABLE IF NOT EXISTS batch_list
+                 (date TEXT, name TEXT, temperature float, duration INT, status TEXT)''')
+
+        # check if there is a running batch in the database and set daemon_state accordingly
+        c.execute("SELECT name FROM batch_list WHERE status=?", (batch_status.RUNNING,))
+        return c.fetchall()
+
+        conn.close()
 
 def get_config(path):
 
@@ -105,15 +121,30 @@ if __name__ == '__main__':
         print "test mode enabled"
         test_mode = 1
 
-    # database init
-    conn = sqlite3.connect('beer_machine.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS batch_list
-             (date TEXT, name TEXT, temperature float, duration INT, status TEXT)''')
-    conn.close()
-
-    # UDS socket init
+    # create and bind socket
     uds_sock = socket_init()
+
+    # open DB and get current state
+    batch = database_init()
+
+    # if there is a running batch in DB, start the worker thread
+    if batch :
+        if len(batch) > 1:
+            print "there is more than 1 running batch in the database, you need to fix it. exiting..."
+            sys.exit(0)
+        else:
+            print "there is one on-going batch:", str(batch[0]) + ". setting daemon in RUNNING state"
+
+            t = threading.Thread(target=worker_temp, args=batch[0])
+
+            # that's the way to convert list item to string...
+            batch = ', '.join(batch[0])
+
+            t.stop_signal = False
+            t.start()
+            state = daemon_status.RUNNING
+    else:
+        batch = None
 
     # command list :
     # create(name, fermentation temperature, fermentation time) : create new batch
@@ -146,8 +177,16 @@ if __name__ == '__main__':
 
             if command[0] == "create" :
                 print "from socket: CREATE requested : ", command
+
                 conn = sqlite3.connect('beer_machine.db')
                 c = conn.cursor()
+
+                # if there is an on-going batch, change it to "ENDED"
+                # c.execute("SELECT * FROM batch_list WHERE status = 'on-going'")
+                # rows = c.fetchall()
+                # if rows:
+                # todo : pop-up to explain that the on-going batch will be moved to ENDED
+                # and move it to ENDED
 
                 # create new table
                 c.execute("CREATE TABLE IF NOT EXISTS %s (date TEXT, temperature float)" % command[1])
@@ -155,32 +194,27 @@ if __name__ == '__main__':
                 c.execute("INSERT INTO batch_list VALUES (?, ?, ?, ?, ?)",
                     (time.ctime(), command[1], float(command[2]), int(command[3]), batch_status.READY))
                 conn.commit()
-
-                # if there is an on-going batch, change it to "ENDED"
-                # c.execute("SELECT * FROM batch_list WHERE status = 'on-going'")
-                # rows = c.fetchall()
-                # if rows:
-                    # todo : pop-up to explain that the on-going batch will be moved to ENDED
-                    # and move it to ENDED
-
                 conn.close()
 
             if command[0] == "get_status" :
-                print "from socket: STATUS requested"
-                connection.sendall("status "+ state)
+                print "from socket: daemon STATUS requested"
+                if batch:
+                    status = "status "+ state + " " + batch
+                else:
+                    status = "status "+ state
+                connection.sendall(status)
 
             if command[0] == "start" :
-                print "from socket: START requested"
-                print command[1]
+                print "from socket: START requested for ", command[1]
                 t = threading.Thread(target=worker_temp, args=[command[1]])
                 t.stop_signal = False
                 t.start()
-                state = state_machine.RUNNING
+                state = daemon_status.RUNNING
                 print "worker thread started"
 
             if command[0] == "stop" :
                 print "from socket: STOP requested"
                 t.stop_signal = True
                 t.join()
-                state = state_machine.STOPPED
+                state = daemon_status.STOPPED
                 print "worker thread stopped"
