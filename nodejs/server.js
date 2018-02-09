@@ -2,7 +2,10 @@ console.log('starting server.js');
 
 var daemon_status = 0
 
-// include and initialize libraries
+/////////////////////////////
+// init and includes
+/////////////////////////////
+
 var express = require('express');
 app = express();
 
@@ -31,7 +34,9 @@ client.on("connect", function() {
 
 });
 
-// socket callback
+/////////////////////////////
+// socket handler
+/////////////////////////////
 client.on("data", function(data) {
 
   console.log(data.toString())
@@ -74,6 +79,33 @@ app.get('/', function(request, response) {
     });
     response.render('index', {point_list:[], table_list:batch_list, beer_machine:daemon_status})
   });
+});
+
+////////////////////////////
+// routing for overview POST
+///////////////////////////
+app.post('/', function(req, res) {
+
+    // debug
+    console.log('POST request to the homepage');
+    console.log(req.body);
+
+    // batch switch
+    if (req.body && req.body.tables) {
+      db.serialize(function() {
+        db.all("SELECT * FROM " +req.body.tables, function (err, rows) {
+          batch_switch = rows;
+          });
+        db.all("SELECT name FROM sqlite_master WHERE type='table'", function (err, rows) {
+          res.render('index', {point_list:batch_switch, table_list:rows, beer_machine:daemon_status})
+          });
+      });
+    }
+
+    // new batch button
+    if (req.body && (req.body.new_batch === '')) {
+      res.redirect('/new_batch');
+    }
 });
 
 //////////////////////////////////////////////////
@@ -127,32 +159,6 @@ app.post('/monitoring/:batch', function(request, response) {
   response.redirect('/monitoring/' + batch_name);
 });
 
-////////////////////////////
-// routing for buttons POST
-///////////////////////////
-app.post('/', function(req, res) {
-
-    // debug
-    console.log('POST request to the homepage');
-    console.log(req.body);
-
-    // batch switch
-    if (req.body && req.body.tables) {
-      db.serialize(function() {
-        db.all("SELECT * FROM " +req.body.tables, function (err, rows) {
-          batch_switch = rows;
-          });
-        db.all("SELECT name FROM sqlite_master WHERE type='table'", function (err, rows) {
-          res.render('index', {point_list:batch_switch, table_list:rows, beer_machine:daemon_status})
-          });
-      });
-    }
-
-    // new batch button
-    if (req.body && (req.body.new_batch === '')) {
-      res.redirect('/new_batch');
-    }
-});
 
 //////////////////////////////
 // routing for new batch GET
