@@ -49,7 +49,9 @@ class beer_db:
         c = conn.cursor()
         c.execute("SELECT name FROM batch_list WHERE status=?", (batch_status.RUNNING,))
         # return a list of running batches (but there shouldn't be more than one)
-        return c.fetchall()
+        batch_list = c.fetchall()
+        conn.close()
+        return batch_list
 
     def change_status(self, batch_name, status):
 
