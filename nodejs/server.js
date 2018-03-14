@@ -74,10 +74,10 @@ app.get('/', function(request, response) {
       selected_brew = row.name;
       console.log("selected batch:" + row.name )
       db.all("SELECT * FROM " + selected_brew, function (err, rows) {
-        response.render('index', {point_list:rows, table_list:batch_list, beer_machine:daemon_status})
+        response.render('template/index', {point_list:rows, table_list:batch_list, beer_machine:daemon_status})
       });
     });
-    response.render('index', {point_list:[], table_list:batch_list, beer_machine:daemon_status})
+    response.render('template/index', {point_list:[], table_list:batch_list, beer_machine:daemon_status})
   });
 });
 
@@ -97,7 +97,7 @@ app.post('/', function(req, res) {
           batch_switch = rows;
           });
         db.all("SELECT name FROM sqlite_master WHERE type='table'", function (err, rows) {
-          res.render('index', {point_list:batch_switch, table_list:rows, beer_machine:daemon_status})
+          res.render('template/index', {point_list:batch_switch, table_list:rows, beer_machine:daemon_status})
           });
       });
     }
