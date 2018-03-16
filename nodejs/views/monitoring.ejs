@@ -58,30 +58,55 @@
         <div class="panel-body">
 
           <div class="col-md-9">
-            <div class="ct-chart ct-major-twelfth"></div>
-            <script>
-            var data = {
-              labels: [
-                ],
-              series: [
-                [<% point_list.forEach(function(row){ %>
-                <%=row.temperature%>,
-                <% }) %>]
-              ]
-            };
+              <canvas id="canvas"></canvas>
+                <script>
+                  var lineChartData = {
+                      labels: [ "a",
+                          "a"
+                      ],
+                      datasets: [{
+                          fill: 'start',
+                          fillColor: "rgba(220,220,220,0)",
+                          strokeColor: "rgba(220,180,0,1)",
+                          pointColor: "rgba(220,180,0,1)",
+                          data: [ 15,
+                              <%
+                          point_list.forEach(function(row){ %>
+                          <%=row.temperature%>,
+                          <% }) %>
+                          30,
+                          ]
+                      }],
+                      options: [{
+                        scales: {
+                          yAxes: [{
+                            bottom: 0,
+                            top:50
+                          }]
+                        }
+                      }],
+                  }
 
-            var options = {
-              lineSmooth: Chartist.Interpolation.monotoneCubic({fillHoles:false}),
-              showPoint: false,
-              low: 15,
-              high: 30,
-              axisX: {
-                showGrid: false
-              }
-            };
+                  Chart.defaults.global.animationSteps = 50;
+                  Chart.defaults.global.tooltipYPadding = 16;
+                  Chart.defaults.global.tooltipCornerRadius = 0;
+                  Chart.defaults.global.tooltipTitleFontStyle = "normal";
+                  Chart.defaults.global.tooltipFillColor = "rgba(0,160,0,0.8)";
+                  Chart.defaults.global.animationEasing = "easeOutBounce";
+                  Chart.defaults.global.responsive = true;
+                  Chart.defaults.global.scaleLineColor = "black";
+                  Chart.defaults.global.scaleFontSize = 12;
 
-            new Chartist.Line('.ct-chart', data, options);
-            </script>
+                  var ctx = document.getElementById("canvas").getContext("2d");
+                  var LineChartDemo = new Chart(ctx).Line(lineChartData, {
+                      pointDotRadius: 2,
+                      bezierCurve: true,
+                      scaleShowVerticalLines: false,
+                      scaleShowHorizontalLines: false,
+                      scaleGridLineColor: "black"
+                  });
+                </script>
+             </div>
           </div>
 
           <!-- TODO : populate data below from database -->

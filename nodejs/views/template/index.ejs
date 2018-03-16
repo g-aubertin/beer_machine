@@ -18,7 +18,8 @@
   <link href="./vendors/nprogress/nprogress.css" rel="stylesheet">
   <!-- iCheck -->
   <link href="./vendors/iCheck/skins/flat/green.css" rel="stylesheet">
-
+  <!-- jquery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <!-- bootstrap-progressbar -->
   <link href="./vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
   <!-- JQVMap -->
@@ -26,8 +27,56 @@
   <!-- bootstrap-daterangepicker -->
   <link href="./vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"> </script>
+
   <!-- Custom Theme Style -->
   <link href="./build/css/custom.min.css" rel="stylesheet">
+
+  <script>
+
+  function init_my_chart() {
+    var ctx = document.getElementById("myChart").getContext('2d');
+    var myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['a', 'a', 'a', 'a', 'a', 'a'],
+        datasets: [{
+          label: '# of Votes',
+          data: [21, 20, 22, 20, 21, 21],
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor:  'rgba(54, 162, 235, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          yAxes: [{
+            gridLines: {
+            display: false
+           },
+            ticks: {
+              beginAtZero:false,
+              min: 18,
+              max:24
+            }
+          }],
+          xAxes: [{
+            gridLines: {
+               display: false
+            }
+          }]
+        }
+      }
+    });
+  };
+
+  $(document).ready(function(){
+    init_my_chart();
+    setInterval(function(){init_my_chart}, 1000);
+  });
+
+</script>
+
 </head>
 
 <body class="nav-md">
@@ -190,7 +239,9 @@
 
                 <!-- graph -->
                 <div class="col-md-9 col-sm-9 col-xs-12 ">
-                  <div id="chart_plot_01" class="demo-placeholder"></div>
+
+                   <canvas id="myChart" height="80%"> </canvas>
+                  <!-- <div id="chart_plot_01" class="demo-placeholder"></div> -->
                 </div>
                 <!-- end graph -->
 
@@ -206,7 +257,8 @@
                   <p> threshold underrun: 3 </p>
                 </div>
                 <input type="hidden" name="button_value" value="start" />
-                <button type="submit"  class="btn btn-success btn-lg">Start</button>
+                <button id ="butt" type="submit"  class="btn btn-success btn-lg">Start</button>
+
                 <div class="clearfix"></div>
                 <!-- end statistics and start/stop button -->
 
@@ -219,6 +271,7 @@
 
           <!-- 3rd row -->
           <div class="row">
+
             <!-- Brew details -->
             <div class="col-md-6 col-sm-6 col-xs-12">
               <div class="x_panel fixed_height_320 dashboard_graph">
@@ -273,27 +326,41 @@
             </div>
             <!-- end Brew details -->
 
-            <!-- HW settings -->
+            <!-- Hw settings -->
             <div class="col-md-6 col-sm-6 col-xs-12">
               <div class="x_panel fixed_height_320 dashboard_graph">
-
                 <div class="x_title">
                   <h3>HW settings</h3>
                   <div class="clearfix"></div>
                 </div>
 
-                <div class="x_content ">
-                    <p><b> System status :  </b></p>
-                    <p> daemon : running </p>
-                    <p> network : 192.168.1.65 </p>
-                    <p> thermometer 1-wire name : XXXXXX </p>
-                    <p> power socket code : YYYYYY </p>
-                    <p> uptime : 134 h</p>
+                <div class="col-md-6 col-sm-6 col-xs-6">
+                  <h2> System status </h2>
+                  <div class="col-md-12 col-sm-12 col-xs-6">
+                    <div class="x_content ">
+                      <p> daemon : running </p>
+                      <p> network : 192.168.1.65 </p>
+                      <p> thermometer 1-wire name : XXXXXX </p>
+                      <p> power socket code : YYYYYY </p>
+                      <p> uptime : 134 h</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6 col-sm-6 col-xs-6">
+                  <h2> Cooling parameters </h2>
+                  <div class="col-md-12 col-sm-12 col-xs-6">
+                    <div class="x_content ">
+                      <p> PID parameters</p>
+
+                    </div>
+                  </div>
 
                 </div>
               </div>
             </div>
             <!-- end HW settings -->
+
           </div>
           <!-- end 3rd row -->
 
