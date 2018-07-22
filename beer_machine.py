@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys, os, time, signal, socket
 import datetime
-import webui, threading
+import threading
 from random import randint
 import beer_db
 
