@@ -61,24 +61,7 @@ client.on("data", function(data) {
 app.get('/', function(request, response) {
 
   console.log("receiving GET on /")
-
-  //first, let's fetch batch_list for batch history dropdown menu
-  db.all("SELECT * FROM batch_list", function (err, rows) {
-    batch_list = rows;
-  });
-
-  // check if there is an on-going brew (status = "running"), and select it for display.
-  // otherwise, display nothing
-  db.all("SELECT * FROM batch_list WHERE status='running'", function (err, rows) {
-    rows.forEach( function(row) {
-      selected_brew = row.name;
-      console.log("selected batch:" + row.name )
-      db.all("SELECT * FROM " + selected_brew, function (err, rows) {
-        response.render('template/index', {point_list:rows, table_list:batch_list, beer_machine:daemon_status})
-      });
-    });
-    response.render('template/index', {point_list:[], table_list:batch_list, beer_machine:daemon_status})
-  });
+  response.render('template/index', {daemon_status:daemon_status})
 });
 
 ////////////////////////////
@@ -88,23 +71,22 @@ app.post('/', function(req, res) {
 
     // debug
     console.log('POST request to the homepage');
-    console.log(req.body);
 
-    // batch switch
-    if (req.body && req.body.tables) {
-      db.serialize(function() {
-        db.all("SELECT * FROM " +req.body.tables, function (err, rows) {
-          batch_switch = rows;
-          });
-        db.all("SELECT name FROM sqlite_master WHERE type='table'", function (err, rows) {
-          res.render('template/index', {point_list:batch_switch, table_list:rows, beer_machine:daemon_status})
-          });
-      });
+    // stop button
+    if (req.body && (req.body.button_value === "stop")) {
+      console.log("stop pushed")
+      client.write("stop")
+      daemon_status = 0
+      res.redirect('/');
     }
 
-    // new batch button
-    if (req.body && (req.body.new_batch === '')) {
-      res.redirect('/new_batch');
+    // stop button
+    if (req.body && (req.body.button_value === "start")) {
+      console.log("start pushed")
+      client.write("start")
+      daemon_status = 1
+      res.redirect('/');
+
     }
 });
 

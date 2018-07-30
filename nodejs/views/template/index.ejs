@@ -153,7 +153,11 @@
           </div>
           <div class="col-md-3 col-sm-6 col-xs-6 tile_stats_count">
             <span class="count_top"><i class="fa fa-time"></i> Status</span>
+            <% if (daemon_status == 1) { %>
             <div class="count">Running</div>
+            <% } else { %>
+            <div class="count">Stopped</div>
+            <% } %>
           </div>
 
           <!-- graph row -->
@@ -186,8 +190,15 @@
                   <p> threshold overrun: 3 </p>
                   <p> threshold underrun: 3 </p>
                 </div>
-                <input type="hidden" name="button_value" value="start" />
-                <button id ="butt" type="submit"  class="btn btn-success btn-lg">Start</button>
+                <form method="post">
+                <% if (daemon_status == 0) { %>
+                  <input type="hidden" name="button_value" value="start" />
+                  <button id ="butt" type="submit"  class="btn btn-success btn-lg">Start</button>
+                <% } else { %>
+                  <input type="hidden" name="button_value" value="stop" />
+                  <button id ="butt" type="submit"  class="btn btn-danger btn-lg">Stop</button>
+                <% } %>
+                </form>
 
                 <div class="clearfix"></div>
                 <!-- end statistics and start/stop button -->

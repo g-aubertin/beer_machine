@@ -139,8 +139,8 @@ if __name__ == '__main__':
 
             # start aquisition
             if command[0] == "start" :
-                print "from socket: START requested for ", command[1]
-                t = threading.Thread(target=worker_thread, args=[command[1]])
+                print "from socket: START requested"
+                t = threading.Thread(target=worker_thread, args=["test_table"])
                 t.stop_signal = False
                 t.start()
                 state = daemon_status.RUNNING
