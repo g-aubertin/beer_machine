@@ -135,7 +135,7 @@ if __name__ == '__main__':
             # status request
             if command[0] == "get_status" :
                 print "from socket: daemon STATUS requested"
-                connection.sendall(state)
+                connection.sendall("status " + state)
 
             # start aquisition
             if command[0] == "start" :
