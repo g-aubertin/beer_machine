@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python2
 import sys, os, time, signal, socket
 import datetime
 import threading
