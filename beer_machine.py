@@ -67,19 +67,22 @@ def worker_thread(batch_name):
     t = threading.currentThread()
 
     while (True):
-        if (t.stop_signal == True):
-            break
+        # get temperature
+        if test_mode == 0:
+            temp = read_temperature()
         else:
-            # get temperature
-            if test_mode == 0:
-                temp = read_temperature()
-            else:
-                temp = randint(20,25)
-            # save temp in db
-            db.add_temperature(batch_name, temp)
-            print str(temp) + " added to " + batch_name
+            temp = randint(20,25)
+        # save temp in db
+        db.add_temperature(batch_name, temp)
+        print str(temp) + " added to " + batch_name
 
-        time.sleep(10)
+        # checking for stop signal during 10s sleep
+        i = 0
+        while(i < 10):
+            if (t.stop_signal == True):
+                sys.exit()
+            time.sleep(1)
+            i = i + 1
 
 if __name__ == '__main__':
 
@@ -144,7 +147,6 @@ if __name__ == '__main__':
                 t.stop_signal = False
                 t.start()
                 state = daemon_status.RUNNING
-                print "worker thread started"
 
             # stop aquisition
             if command[0] == "stop" :
