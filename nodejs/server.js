@@ -29,8 +29,8 @@ app.use(express.static('public'));
 var client = net.createConnection("../beer_socket");
 
 client.on("connect", function() {
-  console.log("connected to socket !");
-  client.write("get_status")
+    console.log("connected to socket !");
+    client.write("get_status")
 
 });
 
@@ -39,20 +39,20 @@ client.on("connect", function() {
 /////////////////////////////
 client.on("data", function(data) {
 
-  console.log(data.toString())
-  data_tab = data.toString().split(" ")
+    console.log(data.toString())
+    data_tab = data.toString().split(" ")
 
-  if (data_tab[0].toString() == "status") {
-    if (data_tab[1].toString() == "running") {
-      console.log("socket response: beer_machine daemon is in RUNNING state")
-      daemon_status = 1
-    }
+    if (data_tab[0].toString() == "status") {
+	if (data_tab[1].toString() == "running") {
+	    console.log("socket response: beer_machine daemon is in RUNNING state")
+	    daemon_status = 1
+	}
 
-    if (data_tab[1].toString() == "stopped") {
-      console.log("socket response: beer_machine daemon is in STOPPED state")
-      daemon_status = 0
+	if (data_tab[1].toString() == "stopped") {
+	    console.log("socket response: beer_machine daemon is in STOPPED state")
+	    daemon_status = 0
+	}
     }
-  }
 });
 
 /////////////////////////////
@@ -60,8 +60,12 @@ client.on("data", function(data) {
 /////////////////////////////
 app.get('/', function(request, response) {
 
-  console.log("receiving GET on /")
-  response.render('template/index', {daemon_status:daemon_status})
+    console.log("receiving GET on /")
+
+    // we need to get the data from test_table
+    db.all("SELECT * FROM test_table", function (err, rows) {
+	response.render('template/index', {daemon_status:daemon_status, point_list:rows})
+    });
 });
 
 ////////////////////////////
@@ -74,18 +78,18 @@ app.post('/', function(req, res) {
 
     // stop button
     if (req.body && (req.body.button_value === "stop")) {
-      console.log("stop pushed")
-      client.write("stop")
-      daemon_status = 0
-      res.redirect('/');
+	console.log("stop pushed")
+	client.write("stop")
+	daemon_status = 0
+	res.redirect('/');
     }
 
     // stop button
     if (req.body && (req.body.button_value === "start")) {
-      console.log("start pushed")
-      client.write("start")
-      daemon_status = 1
-      res.redirect('/');
+	console.log("start pushed")
+	client.write("start")
+	daemon_status = 1
+	res.redirect('/');
 
     }
 });
@@ -95,23 +99,23 @@ app.post('/', function(req, res) {
 //////////////////////////////////////////////////
 app.get('/monitoring/:batch', function(request, response) {
 
-  console.log("receiving GET on /monitoring/:batch !")
+    console.log("receiving GET on /monitoring/:batch !")
 
-  var batch_name = request.params.batch;
+    var batch_name = request.params.batch;
 
-  //first, let's fetch batch_list for batch history dropdown menu
-  db.all("SELECT * FROM batch_list", function (err, rows) {
-    batch_list = rows;
-    rows.forEach(function(row) {
-      if (row.name === batch_name) {
-        batch_info = row;
-      }
-      // we need to get the associate batch information to render
+    //first, let's fetch batch_list for batch history dropdown menu
+    db.all("SELECT * FROM batch_list", function (err, rows) {
+	batch_list = rows;
+	rows.forEach(function(row) {
+	    if (row.name === batch_name) {
+		batch_info = row;
+	    }
+	    // we need to get the associate batch information to render
+	});
+	db.all("SELECT * FROM " + batch_name, function (err, rows) {
+	    response.render('monitoring', {point_list:rows, table_list:batch_list, beer_machine:daemon_status})
+	});
     });
-    db.all("SELECT * FROM " + batch_name, function (err, rows) {
-      response.render('monitoring', {point_list:rows, table_list:batch_list, beer_machine:daemon_status})
-    });
-  });
 
 });
 
@@ -120,25 +124,25 @@ app.get('/monitoring/:batch', function(request, response) {
 //////////////////////////////////////////////////
 app.post('/monitoring/:batch', function(request, response) {
 
-  console.log("receiving POST on /monitoring/:batch !")
+    console.log("receiving POST on /monitoring/:batch !")
 
-  var batch_name = request.params.batch;
+    var batch_name = request.params.batch;
 
-  // stop button
-  if (request.body && (request.body.button_value === "stop")) {
-    console.log("stop pushed")
-    client.write("stop")
-    daemon_status = 0
-  }
+    // stop button
+    if (request.body && (request.body.button_value === "stop")) {
+	console.log("stop pushed")
+	client.write("stop")
+	daemon_status = 0
+    }
 
-  // stop button
-  if (request.body && (request.body.button_value === "start")) {
-    console.log("start pushed")
-    client.write("start " + batch_name)
-    daemon_status = 1
-  }
+    // stop button
+    if (request.body && (request.body.button_value === "start")) {
+	console.log("start pushed")
+	client.write("start " + batch_name)
+	daemon_status = 1
+    }
 
-  response.redirect('/monitoring/' + batch_name);
+    response.redirect('/monitoring/' + batch_name);
 });
 
 
@@ -146,10 +150,10 @@ app.post('/monitoring/:batch', function(request, response) {
 // routing for new batch GET
 //////////////////////////////
 app.get('/new_batch', function(req, res){
-  console.log('redirecting to new_batch page');
-  db.all("SELECT * FROM batch_list", function (err, rows) {
-    res.render('new_batch', {table_list:rows});
-  });
+    console.log('redirecting to new_batch page');
+    db.all("SELECT * FROM batch_list", function (err, rows) {
+	res.render('new_batch', {table_list:rows});
+    });
 
 });
 
@@ -175,9 +179,9 @@ app.post('/new_batch', function (req, res) {
 // routing for system GET
 ///////////////////////////
 app.get('/system', function(req, res){
-  console.log('redirecting to new_batch page');
-  db.all("SELECT * FROM batch_list", function (err, rows) {
-    res.render('system', {table_list:rows});
+    console.log('redirecting to new_batch page');
+    db.all("SELECT * FROM batch_list", function (err, rows) {
+	res.render('system', {table_list:rows});
     });
 });
 
