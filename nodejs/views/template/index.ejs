@@ -1,240 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <!-- Meta, title, CSS, favicons, etc. -->
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="images/favicon.ico" type="image/ico" />
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="images/favicon.ico" type="image/ico" />
 
-  <title>Beer Beer Beer </title>
+    <title>Beer Beer Beer </title>
 
-  <!-- Bootstrap -->
-  <link href="./vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Font Awesome -->
-  <link href="./vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-  <!-- NProgress -->
-  <link href="./vendors/nprogress/nprogress.css" rel="stylesheet">
-  <!-- jquery -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <!-- bootstrap-progressbar -->
-  <link href="./vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link href="./vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="./vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="./vendors/nprogress/nprogress.css" rel="stylesheet">
+    <!-- jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- bootstrap-progressbar -->
+    <link href="./vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
 
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"> </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"> </script>
 
-  <!-- Custom Theme Style -->
-  <link href="./build/css/custom.min.css" rel="stylesheet">
+    <!-- Custom Theme Style -->
+    <link href="./build/css/custom.min.css" rel="stylesheet">
 
-  <script>
+    <% include chart %> 
 
-  function init_my_chart() {
-    var ctx = document.getElementById("myChart").getContext('2d');
-    var myChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: [<% point_list.forEach(function(row) { %>
-	 <% row.date %>,
-	 <% }) %>],
-        datasets: [{
-            label: '# of Votes',
-            data:[<% point_list.forEach(function(row){ %>
-               <%=row.temperature %>,
-	       <% }) %>],
-          backgroundColor: 'rgba(54, 162, 235, 0.2)',
-          borderColor:  'rgba(54, 162, 235, 1)',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        scales: {
-          yAxes: [{
-            gridLines: {
-            display: false
-           },
-            ticks: {
-              beginAtZero:false,
-              min: 18,
-              max:26
-            }
-          }],
-          xAxes: [{
-            gridLines: {
-               display: false
-            }
-          }]
-        }
-      }
-    });
-  };
+  </head>
 
-  $(document).ready(function(){
-    init_my_chart();
-  });
-
-</script>
-
-</head>
-
-<body class="nav-md">
-  <div class="container body">
-    <div class="main_container">
-      <div class="col-md-3 left_col">
-        <div class="left_col scroll-view">
-          <div class="navbar nav_title" style="border: 0;">
-            <a href="index.html" class="site_title"><i class="fa fa-beer"></i> <span>Beer Machine</span></a>
-          </div>
-          <div class="clearfix"></div>
-          <br />
-
-          <!-- sidebar menu -->
-          <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
-            <div class="menu_section">
-              <h3>General</h3>
-              <ul class="nav side-menu">
-                <li><a><i class="fa fa-home"></i> Home </a>
-                </li>
-                <li><a><i class="fa fa-edit"></i> New brew </a>
-                </li>
-                <li><a><i class="fa fa-table"></i> Brew history </a>
-                </li>
-              </ul>
+  <body class="nav-md">
+    <div class="container body">
+      <div class="main_container">
+	<div class="col-md-3 left_col">
+          <div class="left_col scroll-view">
+            <div class="navbar nav_title" style="border: 0;">
+              <a href="index.html" class="site_title"><i class="fa fa-beer"></i> <span>Beer Machine</span></a>
             </div>
-          </div>
-          <!-- /sidebar menu -->
-        </div>
-      </div>
+            <div class="clearfix"></div>
+            <br />
 
-      <!-- top navigation -->
-      <div class="top_nav">
-        <div class="nav_menu">
-          <nav>
-            <div class="nav toggle">
-              <a id="menu_toggle"><i class="fa fa-bars"></i></a>
-            </div>
-
-            <ul class="nav navbar-nav navbar-right">
-              <li class="">
-                <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                  <img src="images/img.jpg" alt="">John Doe
-                  <span class=" fa fa-angle-down"></span>
-                </a>
-                <ul class="dropdown-menu dropdown-usermenu pull-right">
-                  <li><a href="javascript:;"> Profile</a></li>
-                  <li>
-                    <a href="javascript:;">
-                      <span class="badge bg-red pull-right">50%</span>
-                      <span>Settings</span>
-                    </a>
+            <!-- sidebar menu -->
+            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+              <div class="menu_section">
+		<h3>General</h3>
+		<ul class="nav side-menu">
+                  <li><a><i class="fa fa-home"></i> Home </a>
                   </li>
-                  <li><a href="javascript:;">Help</a></li>
-                  <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
-                </ul>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </div>
-      <!-- /top navigation -->
-
-      <!-- page content -->
-      <div class="right_col" role="main">
-        <!-- top tiles -->
-        <div class="row tile_count" align=center>
-          <div class="col-md-3 col-sm-6 col-xs-6 tile_stats_count">
-            <span  class="count_top"><i class="fa fa-beer"></i> recipe</span>
-            <div  class="count"> Citra IPA</div>
-          </div>
-          <div class="col-md-3 col-sm-6 col-xs-6 tile_stats_count">
-            <span class="count_top"><i class="fa fa-thermometer"></i> Current Temperature</span>
-            <div class="count">23 &deg;</div>
-          </div>
-          <div class="col-md-3 col-sm-6 col-xs-6 tile_stats_count">
-            <span class="count_top"><i class="fa fa-hourglass-half"></i> Remaining time</span>
-            <div class="count">21 days</div>
-          </div>
-          <div class="col-md-3 col-sm-6 col-xs-6 tile_stats_count">
-            <span class="count_top"><i class="fa fa-time"></i> Status</span>
-            <% if (daemon_status == 1) { %>
-            <div class="count">Running</div>
-            <% } else { %>
-            <div class="count">Stopped</div>
-            <% } %>
-          </div>
-
-          <!-- graph row -->
-          <div class="row">
-            <div class="col-md-12 col-sm-12 col-xs-12">
-              <div class="x_panel dashboard_graph">
-
-                <div class="row x_title">
-                  <div class="col-md-9">
-                    <h3>Temperature monitoring</h3>
-                  </div>
-                </div>
-
-                <!-- graph -->
-                <div class="col-md-9 col-sm-9 col-xs-12 ">
-
-                   <canvas id="myChart" height="80%"> </canvas>
-                  <!-- <div id="chart_plot_01" class="demo-placeholder"></div> -->
-                </div>
-                <!-- end graph -->
-
-                <!-- statistics and start/stop button -->
-                <div class="col-md-3 col-sm-3 col-xs-12 bg-white">
-                  <div class="x_title" align="center">
-                    <h2> Statistics</h2>
-                    <div class="clearfix"></div>
-                  </div>
-                  <p> fermentation progress : 22% </p>
-                  <p> cooling ratio : 34% </p>
-                  <p> threshold overrun: 3 </p>
-                  <p> threshold underrun: 3 </p>
-                </div>
-                <form method="post">
-                <% if (daemon_status == 0) { %>
-                  <input type="hidden" name="button_value" value="start" />
-                  <button id ="butt" type="submit"  class="btn btn-success btn-lg">Start</button>
-                <% } else { %>
-                  <input type="hidden" name="button_value" value="stop" />
-                  <button id ="butt" type="submit"  class="btn btn-danger btn-lg">Stop</button>
-                <% } %>
-                </form>
-
-                <div class="clearfix"></div>
-                <!-- end statistics and start/stop button -->
+                  <li><a><i class="fa fa-edit"></i> New brew </a>
+                  </li>
+                  <li><a><i class="fa fa-table"></i> Brew history </a>
+                  </li>
+		</ul>
               </div>
             </div>
+            <!-- /sidebar menu -->
           </div>
-          <!-- end graph row -->
+	</div>
 
-        </div>
+	<!-- top navigation -->
+	<div class="top_nav">
+          <div class="nav_menu">
+            <nav>
+              <div class="nav toggle">
+		<a id="menu_toggle"><i class="fa fa-bars"></i></a>
+              </div>
 
-        <!-- /page content -->
+              <ul class="nav navbar-nav navbar-right">
+		<li class="">
+                  <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <img src="images/img.jpg" alt="">John Doe
+                    <span class=" fa fa-angle-down"></span>
+                  </a>
+                  <ul class="dropdown-menu dropdown-usermenu pull-right">
+                    <li><a href="javascript:;"> Profile</a></li>
+                    <li>
+                      <a href="javascript:;">
+			<span class="badge bg-red pull-right">50%</span>
+			<span>Settings</span>
+                      </a>
+                    </li>
+                    <li><a href="javascript:;">Help</a></li>
+                    <li><a href="login.html"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
+                  </ul>
+		</li>
+              </ul>
+            </nav>
+          </div>
+	</div>
+	<!-- /top navigation -->
 
-        <!-- footer content -->
+	<!-- page content -->
+	<div class="right_col" role="main">
+          <!-- top tiles -->
+          <div class="row tile_count" align=center>
+            <div class="col-md-3 col-sm-6 col-xs-6 tile_stats_count">
+              <span  class="count_top"><i class="fa fa-beer"></i> recipe</span>
+              <div  class="count"> Citra IPA</div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-thermometer"></i> Current Temperature</span>
+              <div class="count">23 &deg;</div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-hourglass-half"></i> Remaining time</span>
+              <div class="count">21 days</div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-6 tile_stats_count">
+              <span class="count_top"><i class="fa fa-time"></i> Status</span>
+              <% if (daemon_status == 1) { %>
+              <div class="count">Running</div>
+              <% } else { %>
+              <div class="count">Stopped</div>
+              <% } %>
+            </div>
+
+            <!-- graph row -->
+            <div class="row">
+              <div class="col-md-12 col-sm-12 col-xs-12">
+		<div class="x_panel dashboard_graph">
+
+                  <div class="row x_title">
+                    <div class="col-md-9">
+                      <h3>Temperature monitoring</h3>
+                    </div>
+                  </div>
+
+                  <!-- graph -->
+                  <div class="col-md-9 col-sm-9 col-xs-12 ">
+
+                    <canvas id="myChart" height="80%"> </canvas>
+                    <!-- <div id="chart_plot_01" class="demo-placeholder"></div> -->
+                  </div>
+                  <!-- end graph -->
+
+                  <!-- statistics and start/stop button -->
+                  <div class="col-md-3 col-sm-3 col-xs-12 bg-white">
+                    <div class="x_title" align="center">
+                      <h2> Statistics</h2>
+                      <div class="clearfix"></div>
+                    </div>
+                    <p> fermentation progress : 22% </p>
+                    <p> cooling ratio : 34% </p>
+                    <p> threshold overrun: 3 </p>
+                    <p> threshold underrun: 3 </p>
+                  </div>
+                  <form method="post">
+                    <% if (daemon_status == 0) { %>
+                    <input type="hidden" name="button_value" value="start" />
+                    <button id ="butt" type="submit"  class="btn btn-success btn-lg">Start</button>
+                    <% } else { %>
+                    <input type="hidden" name="button_value" value="stop" />
+                    <button id ="butt" type="submit"  class="btn btn-danger btn-lg">Stop</button>
+                    <% } %>
+                  </form>
+
+                  <div class="clearfix"></div>
+                  <!-- end statistics and start/stop button -->
+		</div>
+              </div>
+            </div>
+            <!-- end graph row -->
+          </div>
+          <!-- /page content -->
+
+          <!-- footer content -->
+	</div>
       </div>
-    </div>
 
-    <!-- jQuery -->
-    <script src="../vendors/jquery/dist/jquery.min.js"></script>
-    <!-- Bootstrap -->
-    <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
-    <!-- NProgress -->
-    <script src="../vendors/nprogress/nprogress.js"></script>
-    <!-- Chart.js -->
-    <script src="../vendors/Chart.js/dist/Chart.min.js"></script>
-    <!-- gauge.js -->
-    <script src="../vendors/gauge.js/dist/gauge.min.js"></script>
-    <!-- bootstrap-progressbar -->
-    <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+      <!-- jQuery -->
+      <script src="../vendors/jquery/dist/jquery.min.js"></script>
+      <!-- Bootstrap -->
+      <script src="../vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+      <!-- NProgress -->
+      <script src="../vendors/nprogress/nprogress.js"></script>
+      <!-- Chart.js -->
+      <script src="../vendors/Chart.js/dist/Chart.min.js"></script>
+      <!-- gauge.js -->
+      <script src="../vendors/gauge.js/dist/gauge.min.js"></script>
+      <!-- bootstrap-progressbar -->
+      <script src="../vendors/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
 
-
-
-    <!-- Custom Theme Scripts -->
-    <script src="../build/js/custom.min.js"></script>
+      <!-- Custom Theme Scripts -->
+      <script src="../build/js/custom.min.js"></script>
 
   </body>
-  </html>
+</html>
