@@ -34,10 +34,14 @@
     var myChart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: ['a', 'a', 'a', 'a', 'a', 'a'],
+        labels: [<% point_list.forEach(function(row) { %>
+	 <% row.date %>,
+	 <% }) %>],
         datasets: [{
-          label: '# of Votes',
-          data: [21, 20, 22, 20, 21, 21],
+            label: '# of Votes',
+            data:[<% point_list.forEach(function(row){ %>
+               <%=row.temperature %>,
+	       <% }) %>],
           backgroundColor: 'rgba(54, 162, 235, 0.2)',
           borderColor:  'rgba(54, 162, 235, 1)',
           borderWidth: 1
@@ -52,7 +56,7 @@
             ticks: {
               beginAtZero:false,
               min: 18,
-              max:24
+              max:26
             }
           }],
           xAxes: [{
@@ -67,7 +71,6 @@
 
   $(document).ready(function(){
     init_my_chart();
-    setInterval(function(){init_my_chart}, 1000);
   });
 
 </script>
