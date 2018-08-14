@@ -1,47 +1,61 @@
-
 <script>
-    function init_my_chart() {
-	var ctx = document.getElementById("myChart").getContext('2d');
-	var myChart = new Chart(ctx, {
-	    type: 'line',
-	    data: {
-		labels: [<% point_list.forEach(function(row) { %>
-							       <% row.date %>,
-							       <% }) %>],
-		datasets: [{
-		    label: '# of Votes',
-		    data:[<% point_list.forEach(function(row){ %>
-							       <%=row.temperature %>,
-							       <% }) %>],
-		    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-		    borderColor:  'rgba(54, 162, 235, 1)',
-		    borderWidth: 1
-		}]
-	    },
-	    options: {
-		scales: {
-		    yAxes: [{
-			gridLines: {
-			    display: false
-			},
-			ticks: {
-			    beginAtZero:false,
-			    min: 18,
-			    max:26
-			}
-		    }],
-		    xAxes: [{
-			gridLines: {
-			    display: false
-			}
-		    }]
+
+var myChart = undefined
+var config = {
+    type: 'line',
+    data: {
+	labels: [<% point_list.forEach(function(row) { %>
+						       <% row.date %>,
+						       <% }) %>],
+	datasets: [{
+	    label: '# of Votes',
+	    data:[<% point_list.forEach(function(row){ %>
+						       <%=row.temperature %>,
+						       <% }) %>],
+	    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+	    borderColor:  'rgba(54, 162, 235, 1)',
+	    borderWidth: 1
+	}]
+    },
+    options: {
+	scales: {
+	    yAxes: [{
+		gridLines: {
+		    display: false
+		},
+		ticks: {
+		    beginAtZero:false,
+		    min: 18,
+		    max:26
 		}
-	    }
-	});
-    };
+	    }],
+	    xAxes: [{
+		gridLines: {
+		    display: false
+		}
+	    }]
+	}
+    }
+}
+
+
+function init_my_chart() {
+    var ctx = document.getElementById("myChart").getContext('2d');
+    myChart = new Chart(ctx, config)
+}
+
 
 $(document).ready(function(){
     init_my_chart();
+    // if we are in running state, then refresh every 10s
+       <% if (daemon_status == 1) { %>
+				    setInterval(function() {
+					var data = 20
+					config.data.datasets[0].data.push(data)
+					config.data.labels.push("")
+					myChart.update()
+				}, 3000)
+       <% } %>
 });
 
 </script>
