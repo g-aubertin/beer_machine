@@ -1,6 +1,9 @@
 import sqlite3
 import sys
 import time
+import json
+
+JSON_EXPORT="./beer.json"
 
 class batch_status:
     READY = "ready"
@@ -65,6 +68,13 @@ class beer_db:
 
         conn = sqlite3.connect(self.file)
         c = conn.cursor()
+        # add latest measurement
         c.execute("INSERT INTO %s VALUES (?, ?)"% batch_name, (time.ctime(), temp))
+        # generate new json file to charting
+        c.execute("SELECT * FROM %s" % batch_name)
         conn.commit()
+        temp = c.fetchall()
+        print "creating new json file"
+        fd_json = open("%s.json" % batch_name, "w");
+        json.dump(temp, fd_json, separators=(',', ': '), indent=4)
         conn.close()
