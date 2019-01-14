@@ -18,7 +18,6 @@ function init_my_chart() {
 	    },
 	    xAxis: {
 		type: 'datetime',
-
 	    },
 	    yAxis: {
 		title: {
@@ -48,7 +47,7 @@ function init_my_chart() {
 		    marker: {
 			radius: 4
 		    },
-		    lineWidth: 3,
+		    lineWidth: 1,
 		    states: {
 			hover: {
 			    lineWidth: 2
@@ -61,7 +60,8 @@ function init_my_chart() {
 	    series: [{
 		type: 'area',
 		name: 'USD to EUR',
-		data: data
+		data: data,
+		turboThreshold: 40000
 	    }],
 	    navigation: {
 		buttonOptions: {
