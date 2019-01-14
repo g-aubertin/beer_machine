@@ -75,6 +75,6 @@ class beer_db:
         conn.commit()
         temp = c.fetchall()
         print "creating new json file"
-        fd_json = open("%s.json" % batch_name, "w");
+        fd_json = open("nodejs/public/%s.json" % batch_name, "w");
         json.dump(temp, fd_json, separators=(',', ': '), indent=4)
         conn.close()
