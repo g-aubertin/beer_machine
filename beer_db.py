@@ -2,8 +2,9 @@ import sqlite3
 import sys
 import time
 import json
+from datetime import datetime
+from time import mktime
 
-JSON_EXPORT="./beer.json"
 
 class batch_status:
     READY = "ready"
@@ -30,7 +31,7 @@ class beer_db:
                 sys.exit()
         # if this is an empty DB, create the batch list
         c.execute('''CREATE TABLE IF NOT EXISTS batch_list
-                 (date TEXT, name TEXT, temperature float, duration INT, status TEXT)''')
+                 (date INT, name TEXT, temperature float, duration INT, status TEXT)''')
         conn.commit()
         conn.close()
 
@@ -39,7 +40,7 @@ class beer_db:
         conn = sqlite3.connect(self.file)
         c = conn.cursor()
         # create new table for temperature data
-        c.execute("CREATE TABLE IF NOT EXISTS %s (date TEXT, temperature float)" % command[1])
+        c.execute("CREATE TABLE IF NOT EXISTS %s (date INT, temperature float)" % command[1])
         # add entry in table_list : creation date - name - temperature - duration -status
         c.execute("INSERT INTO batch_list VALUES (?, ?, ?, ?, ?)",
             (time.ctime(), str(name), int(temperature), int(duration), batch_status.READY))
@@ -68,8 +69,13 @@ class beer_db:
 
         conn = sqlite3.connect(self.file)
         c = conn.cursor()
+        # calculate time in millisecond since epoch
+        dt = datetime.now()
+        sec_since_epoch = mktime(dt.timetuple()) + dt.microsecond/1000000.0
+        timestamp = sec_since_epoch * 1000
+        print "timestamp: %d ", timestamp
         # add latest measurement
-        c.execute("INSERT INTO %s VALUES (?, ?)"% batch_name, (time.ctime(), temp))
+        c.execute("INSERT INTO %s VALUES (?, ?)"% batch_name, (int(timestamp), temp))
         # generate new json file to charting
         c.execute("SELECT * FROM %s" % batch_name)
         conn.commit()
