@@ -64,7 +64,7 @@ app.get('/', function(request, response) {
 
     // we need to get the data from test_table
     db.all("SELECT * FROM test_table", function (err, rows) {
-	response.render('template/index', {daemon_status:daemon_status, point_list:rows})
+	response.render('index', {daemon_status:daemon_status, point_list:rows})
     });
 });
 
