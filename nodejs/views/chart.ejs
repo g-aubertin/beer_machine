@@ -1,11 +1,12 @@
 <script>
 
 var myChart = undefined
+var db_name = undefined
 
-function init_my_chart() {
+function init_my_chart(json_file) {
 
     $.getJSON(
-    'test_table.json',
+    json_file,
 	function (data) {
 
 	Highcharts.chart('myChart', {
@@ -76,7 +77,9 @@ function init_my_chart() {
 
 
 $(document).ready(function(){
-    init_my_chart();
+    db_name = "<%= current_batch %>" + ".json"
+    console.log(db_name)
+    init_my_chart(db_name);
 });
 
 </script>

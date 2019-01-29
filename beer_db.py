@@ -7,10 +7,9 @@ from time import mktime
 
 
 class batch_status:
-    READY = "ready"
-    RUNNING = "running"
+    STARTED = "started"
     STOPPED = "stopped"
-    ENDED = "ended"
+
 
 class beer_db:
     """ sqlite3 database wrapper to store fermentation data
@@ -39,11 +38,16 @@ class beer_db:
 
         conn = sqlite3.connect(self.file)
         c = conn.cursor()
+        # clear db and set all other batches to "stopped"
+        c.execute("UPDATE batch_list SET status='stopped'")
         # create new table for temperature data
-        c.execute("CREATE TABLE IF NOT EXISTS %s (date INT, temperature float)" % command[1])
+        c.execute("CREATE TABLE IF NOT EXISTS %s (date INT, temperature float)" % name)
         # add entry in table_list : creation date - name - temperature - duration -status
         c.execute("INSERT INTO batch_list VALUES (?, ?, ?, ?, ?)",
-            (time.ctime(), str(name), int(temperature), int(duration), batch_status.READY))
+            (time.ctime(), str(name), int(temperature), int(duration), batch_status.STARTED))
+        # create empty json file for charting
+        fd_json = open("nodejs/public/%s.json" % name, "w");
+        fd_json.close()
         conn.commit()
         conn.close()
 
@@ -51,7 +55,7 @@ class beer_db:
 
         conn = sqlite3.connect(self.file)
         c = conn.cursor()
-        c.execute("SELECT name FROM batch_list WHERE status=?", (batch_status.RUNNING,))
+        c.execute("SELECT name FROM batch_list WHERE status='started'")
         # return a list of running batches (but there shouldn't be more than one)
         batch_list = c.fetchall()
         conn.close()

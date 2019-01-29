@@ -1,6 +1,7 @@
 console.log('starting server.js');
 
-var daemon_status = 0
+var daemon_status = 0;
+var current_batch = undefined;
 
 /////////////////////////////
 // init and includes
@@ -42,16 +43,22 @@ client.on("data", function(data) {
     console.log(data.toString())
     data_tab = data.toString().split(" ")
 
+    // daemon status
     if (data_tab[0].toString() == "status") {
-	if (data_tab[1].toString() == "running") {
+	if (data_tab[1].toString() == "daemon_running") {
 	    console.log("socket response: beer_machine daemon is in RUNNING state")
 	    daemon_status = 1
 	}
 
-	if (data_tab[1].toString() == "stopped") {
+	if (data_tab[1].toString() == "daemon_stopped") {
 	    console.log("socket response: beer_machine daemon is in STOPPED state")
 	    daemon_status = 0
 	}
+    }
+
+    // batch status
+    if (data_tab[0].toString() == "batch") {
+	current_batch = data_tab[1].toString()
     }
 });
 
@@ -64,7 +71,7 @@ app.get('/', function(request, response) {
 
     // we need to get the data from test_table
     db.all("SELECT * FROM test_table", function (err, rows) {
-	response.render('index', {daemon_status:daemon_status, point_list:rows})
+	response.render('index', {daemon_status:daemon_status, current_batch:current_batch});
     });
 });
 
@@ -94,58 +101,6 @@ app.post('/', function(req, res) {
     }
 });
 
-//////////////////////////////////////////////////
-// routing for monitoring page with selected batch
-//////////////////////////////////////////////////
-app.get('/monitoring/:batch', function(request, response) {
-
-    console.log("receiving GET on /monitoring/:batch !")
-
-    var batch_name = request.params.batch;
-
-    //first, let's fetch batch_list for batch history dropdown menu
-    db.all("SELECT * FROM batch_list", function (err, rows) {
-	batch_list = rows;
-	rows.forEach(function(row) {
-	    if (row.name === batch_name) {
-		batch_info = row;
-	    }
-	    // we need to get the associate batch information to render
-	});
-	db.all("SELECT * FROM " + batch_name, function (err, rows) {
-	    response.render('monitoring', {point_list:rows, table_list:batch_list, beer_machine:daemon_status})
-	});
-    });
-
-});
-
-//////////////////////////////////////////////////
-// routing for monitoring page POST
-//////////////////////////////////////////////////
-app.post('/monitoring/:batch', function(request, response) {
-
-    console.log("receiving POST on /monitoring/:batch !")
-
-    var batch_name = request.params.batch;
-
-    // stop button
-    if (request.body && (request.body.button_value === "stop")) {
-	console.log("stop pushed")
-	client.write("stop")
-	daemon_status = 0
-    }
-
-    // stop button
-    if (request.body && (request.body.button_value === "start")) {
-	console.log("start pushed")
-	client.write("start " + batch_name)
-	daemon_status = 1
-    }
-
-    response.redirect('/monitoring/' + batch_name);
-});
-
-
 //////////////////////////////
 // routing for new batch GET
 //////////////////////////////
@@ -162,6 +117,7 @@ app.get('/new_batch', function(req, res){
 //////////////////////////////
 app.post('/new_batch', function (req, res) {
     console.log('POST request to create a new batch');
+    console.log(req.body);
     var name = req.body.batch_name;
     var temperature = req.body.temperature
     var duration = req.body.duration;
@@ -173,17 +129,5 @@ app.post('/new_batch', function (req, res) {
     res.redirect('/');
 
 });
-
-
-///////////////////////////
-// routing for system GET
-///////////////////////////
-app.get('/system', function(req, res){
-    console.log('redirecting to new_batch page');
-    db.all("SELECT * FROM batch_list", function (err, rows) {
-	res.render('system', {table_list:rows});
-    });
-});
-
 
 app.listen(8080);

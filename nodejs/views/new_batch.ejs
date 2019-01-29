@@ -27,8 +27,25 @@
 	<% include menubar %>
 
 	<!-- page content -->
-	  <div class="right_col" role="main">
-	  </div>
+	<div class="right_col" role="main">
+
+	  <form action="new_batch" method="post">
+	    <div class="form-group">
+	      <label for="batch_name">Batch name</label>
+	      <input name="batch_name" type="text" class="form-control" id="batch_name" placeholder="tasty beer name">
+	    </div>
+	    <div class="form-group">
+	      <label for="temperature">Temperature</label>
+	      <input name="temperature" type="text" class="form-control" id="temperature" placeholder="fermentation temperature">
+	    </div>
+	    <div class="form-group">
+	      <label for="duration">Duration</label>
+	      <input name="duration" type="text" class="form-control" id="duration" placeholder="fermentation duration">
+	    </div>
+	    <button type="submit" class="btn btn-success btn-lg">Submit</button>
+	  </form>
+
+	</div>
 	<!-- /page content -->
 
 	<!-- footer content -->

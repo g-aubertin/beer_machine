@@ -10,11 +10,11 @@ test_mode = 0
 
 # overall state machine of the daemon
 class daemon_status:
-    STOPPED = "stopped"
-    RUNNING = "running"
-    SHUTDOWN = "shutdown"
+    STOPPED = "daemon_stopped"
+    RUNNING = "daemon_running"
+    SHUTDOWN = "daemon_shutdown"
 
-state = daemon_status.STOPPED
+daemon_state = daemon_status.STOPPED
 
 # initialize UDS socket
 def socket_init():
@@ -134,24 +134,29 @@ if __name__ == '__main__':
             if command[0] == "create" :
                 print "from socket: CREATE requested : ", command
                 db.new_batch(command[1], command[2], command[3])
+                batch_status = db.get_status()
+                connection.sendall("batch" + " " + " ".join(batch_status[0]))
 
             # status request
             if command[0] == "get_status" :
                 print "from socket: daemon STATUS requested"
-                connection.sendall("status " + state)
+                batch_status = db.get_status()
+                connection.sendall("status" + " " +  daemon_state)
+                if batch_status:
+                    connection.sendall("batch" + " " + " ".join(batch_status[0]))
 
             # start aquisition
             if command[0] == "start" :
                 print "from socket: START requested"
-                t = threading.Thread(target=worker_thread, args=["test_table"])
+                t = threading.Thread(target=worker_thread, args=[" ".join(batch_status[0])])
                 t.stop_signal = False
                 t.start()
-                state = daemon_status.RUNNING
+                daemon_state = daemon_status.RUNNING
 
             # stop aquisition
             if command[0] == "stop" :
                 print "from socket: STOP requested"
                 t.stop_signal = True
                 t.join()
-                state = daemon_status.STOPPED
+                daemon_state = daemon_status.STOPPED
                 print "worker thread stopped"
