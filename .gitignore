@@ -5,3 +5,7 @@
 RFSource/*
 !RFSource/*.cpp
 !RFSource/Makefile
+*.pyc
+*.json
+nodejs/node_modules/
+*.db
