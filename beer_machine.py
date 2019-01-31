@@ -90,7 +90,9 @@ if __name__ == '__main__':
         print "configuration file needed"
         sys.exit(0)
 
-    if sys.argv[2] == '-t':
+    get_config(sys.argv[1]);
+
+    if (len(sys.argv) > 2 and sys.argv[2] == '-t'):
         print "test mode enabled"
         test_mode = 1
 
