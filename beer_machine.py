@@ -144,6 +144,7 @@ if __name__ == '__main__':
                 print "from socket: daemon STATUS requested"
                 batch_status = db.get_status()
                 connection.sendall("status" + " " +  daemon_state)
+		time.sleep(0.5)
                 if batch_status:
                     connection.sendall("batch" + " " + " ".join(batch_status[0]))
 
