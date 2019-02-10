@@ -3,11 +3,9 @@ Description= Beer Machine engine
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python2.7 /opt/beer_machine/beer_machine.py config.ini
-WorkingDirectory=/opt/beer_machine
-StandardOutput=inherit
-StandardError=inherit
-Restart=always
+Type=idle
+ExecStart=/usr/bin/python /home/pi/beer_machine/beer_machine.py config.ini
+WorkingDirectory=/home/pi/beer_machine
 User=pi
 
 [Install]
