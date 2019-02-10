@@ -78,7 +78,7 @@ def worker_thread(batch_name):
 
         # checking for stop signal during 10s sleep
         i = 0
-        while(i < 10):
+        while(i < 30):
             if (t.stop_signal == True):
                 sys.exit()
             time.sleep(1)
