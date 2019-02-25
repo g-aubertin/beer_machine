@@ -1,0 +1,25 @@
+#### TODO list for v0.2 ####
+
+## batch status
+- fix status field in DB when calling 'stop' from the UI
+- to check fields in the DB when starting : if more than 1 is started, return error
+
+## UI
+- get proper batch name and temperature from the DB and print it
+- change John Doe bar to User bar
+- add login screen
+
+## history
+- create history page with past brews (highchart graph, menu to select)
+
+## hydrometer
+- update DB architecture to get density and liquid temperature
+- update Highchart to support 2 more datasets
+
+## highchart
+- json transfer too slow / try other options
+- try preview bar below chart
+
+## Readme & doc
+- update readme
+- clean licence headers
