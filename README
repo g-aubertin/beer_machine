@@ -1,6 +1,0 @@
-### how to install and configure ###
-
-1)make
-2)sudo make install
-3)edit configuration file in /opt/beer_machine/config.ini
-4)enable daemon file with 'sudo systemctl enable beer_machine' and reboot the device
