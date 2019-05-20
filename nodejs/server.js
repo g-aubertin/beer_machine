@@ -2,6 +2,8 @@ console.log('starting server.js');
 
 var daemon_status = 0;
 var current_batch = undefined;
+var target_temp = undefined;
+var duration = undefined;
 
 /////////////////////////////
 // init and includes
@@ -59,6 +61,8 @@ client.on("data", function(data) {
     // batch status
     if (data_tab[0].toString() == "batch") {
 	current_batch = data_tab[1].toString()
+  target_temp = data_tab[2].toString()
+  duration = data_tab[3].toString()
     }
 });
 
@@ -69,10 +73,10 @@ app.get('/', function(request, response) {
 
     console.log("receiving GET on /")
 
-    // we need to get the data from test_table
-    db.all("SELECT * FROM test_table", function (err, rows) {
-	response.render('index', {daemon_status:daemon_status, current_batch:current_batch});
-    });
+    // TODO :
+    // send recipe name, daemon_status
+    response.render('index', {daemon_status:daemon_status, current_batch:current_batch, target_temp:target_temp, duration:duration});
+
 });
 
 ////////////////////////////

@@ -50,15 +50,15 @@
 	  <div class="row tile_count" align=center>
 	    <div class="col-md-3 col-sm-6 col-xs-6 tile_stats_count">
 	      <span  class="count_top"><i class="fa fa-beer"></i> recipe</span>
-	      <div  class="count"> Citra IPA</div>
+	      <div  class="count"> <%= current_batch %></div>
 	    </div>
 	    <div class="col-md-3 col-sm-6 col-xs-6 tile_stats_count">
 	      <span class="count_top"><i class="fa fa-thermometer"></i> Current Temperature</span>
-	      <div class="count">23 &deg;</div>
+	      <div class="count"><%= target_temp %> &deg;</div>
 	    </div>
 	    <div class="col-md-3 col-sm-6 col-xs-6 tile_stats_count">
 	      <span class="count_top"><i class="fa fa-hourglass-half"></i> Remaining time</span>
-	      <div class="count">21 days</div>
+	      <div class="count"><%=duration %> days</div>
 	    </div>
 	    <div class="col-md-3 col-sm-6 col-xs-6 tile_stats_count">
 	      <span class="count_top"><i class="fa fa-time"></i> Status</span>

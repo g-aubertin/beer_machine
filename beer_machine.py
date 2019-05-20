@@ -144,9 +144,11 @@ if __name__ == '__main__':
                 print "from socket: daemon STATUS requested"
                 batch_status = db.get_status()
                 connection.sendall("status" + " " +  daemon_state)
-		time.sleep(0.5)
+                time.sleep(0.5)
                 if batch_status:
-                    connection.sendall("batch" + " " + " ".join(batch_status[0]))
+                    batch_info = db.get_batch_info(batch_status[0])
+                    print batch_info
+                    connection.sendall("batch " + " ".join(batch_status[0]) + " " + str(batch_info[0]) + " " + str(batch_info[1]))
 
             # start aquisition
             if command[0] == "start" :

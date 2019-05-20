@@ -51,6 +51,7 @@ class beer_db:
         conn.commit()
         conn.close()
 
+    # TODO should be renamed 'get_current_batch', ' get_daemon_status' or something like that
     def get_status(self):
 
         conn = sqlite3.connect(self.file)
@@ -60,6 +61,19 @@ class beer_db:
         batch_list = c.fetchall()
         conn.close()
         return batch_list
+
+    def get_batch_info(self, batch_name):
+
+        conn = sqlite3.connect(self.file)
+        c = conn.cursor()
+        c.execute("SELECT temperature, duration FROM batch_list WHERE name = '%s' " % batch_name)
+        # return a list of running batches (but there shouldn't be more than one)
+        batch_info = c.fetchall()
+        print batch_info
+        conn.close()
+        return batch_info[0]
+
+
 
     def change_status(self, batch_name, status):
 
